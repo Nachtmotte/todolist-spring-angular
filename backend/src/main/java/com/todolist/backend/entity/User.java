@@ -1,7 +1,10 @@
 package com.todolist.backend.entity;
 
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.*;
 
 @Entity
@@ -21,13 +24,19 @@ public class User {
 
     private String lastname;
 
-    @Column(unique=true, updatable = false)
+    @Column(unique = true, updatable = false)
     private String email;
 
-    @Column(unique=true, updatable = false)
+    @Column(unique = true, updatable = false)
     private String username;
 
     private String password;
+
+    @CreatedDate
+    @Column(updatable = false)
+    private Timestamp created;
+
+    private boolean verified;
 
     @OneToOne(mappedBy = "user")
     private ProfilePicture profilePicture;
@@ -38,8 +47,13 @@ public class User {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
-            joinColumns = @JoinColumn(name="user_id"),
+            joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Collection<Role> roles = new ArrayList<>();
+
+    @PrePersist
+    private void prePersistUser() {
+        this.setVerified(false);
+    }
 }

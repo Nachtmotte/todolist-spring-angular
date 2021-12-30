@@ -1,6 +1,7 @@
 package com.todolist.backend.entity;
 
 import lombok.*;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(unique=true)
+    @Column(unique = true)
     private String name;
 
     @ManyToMany(mappedBy = "roles")

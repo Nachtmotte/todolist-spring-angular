@@ -1,6 +1,7 @@
 package com.todolist.backend.dto.picture;
 
 import lombok.Data;
+
 import javax.validation.constraints.*;
 
 @Data
@@ -13,6 +14,4 @@ public class ProfilePictureDto {
     @Pattern(regexp = "(https://firebasestorage.googleapis.com/)(.*)(\\?.*)", message = "The Image URL is invalid.")
     private String url;
 
-    @NotNull(message = "The User ID is required.")
-    private Integer userId;
 }

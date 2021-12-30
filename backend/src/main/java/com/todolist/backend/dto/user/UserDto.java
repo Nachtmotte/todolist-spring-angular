@@ -1,10 +1,11 @@
 package com.todolist.backend.dto.user;
 
 import lombok.Data;
+
 import javax.validation.constraints.*;
 
 @Data
-public class UserDto {
+public abstract class UserDto {
 
     @NotBlank(message = "The First Name is required.")
     @Size(max = 45, message = "The length of the First Name cannot exceed 45 characters")

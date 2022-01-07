@@ -1,6 +1,6 @@
 package com.todolist.backend.dto.user;
 
-import com.todolist.backend.entity.ProfilePicture;
+import com.todolist.backend.dto.picture.ProfilePictureDto;
 import lombok.*;
 
 import java.sql.Timestamp;
@@ -14,5 +14,5 @@ public class UserGetDto extends UserDto {
 
     private Boolean verified;
 
-    private ProfilePicture profilePicture;
+    private ProfilePictureDto profilePicture;
 }

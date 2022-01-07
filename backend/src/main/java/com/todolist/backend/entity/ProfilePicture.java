@@ -16,7 +16,7 @@ public class ProfilePicture {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(unique = true)
+    @Column(name = "name", unique = true)
     private String name;
 
     @Column(unique = true)

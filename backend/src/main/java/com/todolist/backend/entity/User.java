@@ -1,7 +1,7 @@
 package com.todolist.backend.entity;
 
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -10,7 +10,6 @@ import java.util.*;
 @Entity
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user")
@@ -32,7 +31,7 @@ public class User {
 
     private String password;
 
-    @CreatedDate
+    @CreationTimestamp
     @Column(updatable = false)
     private Timestamp created;
 

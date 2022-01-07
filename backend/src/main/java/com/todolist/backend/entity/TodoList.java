@@ -9,7 +9,6 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "todo_list")
@@ -19,7 +18,7 @@ public class TodoList {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(unique=true)
+    @Column(name = "name", unique=true)
     private String name;
 
     @CreatedDate
@@ -30,6 +29,6 @@ public class TodoList {
     @JoinColumn(name = "user_id", updatable = false)
     private User user;
 
-    @OneToMany(mappedBy = "todoList")
+    @OneToMany(mappedBy = "todoList", cascade = CascadeType.REMOVE)
     private List<Item> items;
 }

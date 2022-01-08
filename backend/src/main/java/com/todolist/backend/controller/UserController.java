@@ -1,10 +1,10 @@
 package com.todolist.backend.controller;
 
+import com.todolist.backend.controller.util.ModelMapperService;
 import com.todolist.backend.dto.user.*;
 import com.todolist.backend.entity.User;
 import com.todolist.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.*;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +21,8 @@ public class UserController {
 
     private final UserService userService;
 
-    private final ModelMapper mapper;
+    private final ModelMapperService mapperService;
 
-    @Secured("permitAll")
     @PostMapping()
     public ResponseEntity<Map<String, Object>> createUser(@Valid @RequestBody UserPostDto requestUser) {
         Map<String, Object> bodyResponse = new HashMap<>();
@@ -33,9 +32,9 @@ public class UserController {
             return new ResponseEntity<>(bodyResponse, HttpStatus.CONFLICT);
         }
 
-        User user = mapUserPostDtoToUserEntity(requestUser);
+        User user = mapperService.mapUserPostDtoToUserEntity(requestUser);
         user = userService.save(user);
-        UserGetDto userGetDto = mapUserEntityToUserGetDto(user);
+        UserGetDto userGetDto = mapperService.mapUserEntityToUserGetDto(user);
 
         bodyResponse.put("user", userGetDto);
 
@@ -53,16 +52,8 @@ public class UserController {
             return new ResponseEntity<>(bodyResponse, HttpStatus.NOT_FOUND);
         }
 
-        UserGetDto userDto = mapUserEntityToUserGetDto(user);
+        UserGetDto userDto = mapperService.mapUserEntityToUserGetDto(user);
         bodyResponse.put("user", userDto);
         return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
-    }
-
-    public User mapUserPostDtoToUserEntity(UserPostDto userPostDto){
-        return mapper.map(userPostDto, User.class);
-    }
-
-    public UserGetDto mapUserEntityToUserGetDto(User user){
-        return mapper.map(user, UserGetDto.class);
     }
 }

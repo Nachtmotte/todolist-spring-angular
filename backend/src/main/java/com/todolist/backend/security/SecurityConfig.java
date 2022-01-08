@@ -17,6 +17,9 @@ import org.springframework.web.cors.*;
 
 import java.util.*;
 
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -51,10 +54,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        //setAuthorizeRequestsPermitAll(http);
-        //setAuthorizeRequestsAdmin(http);
-        //setAuthorizeRequestsUser(http);
-        //setAuthorizeRequestsAllRoles(http);
+        http.authorizeRequests().antMatchers(POST, "/login", "/users").permitAll();
+        http.authorizeRequests().antMatchers(GET, "/token/refresh").permitAll();
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean(), jwtService));
         http.addFilterBefore(new CustomAuthorizationFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
@@ -65,31 +66,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
-    /*
-    private void setAuthorizeRequestsPermitAll(HttpSecurity http) throws Exception{
-        http.authorizeRequests().antMatchers(POST, LOGIN, CREATE_USER).permitAll();
-        http.authorizeRequests().antMatchers(GET, REFRESH_TOKEN).permitAll();
-    }
-
-    private void setAuthorizeRequestsAllRoles(HttpSecurity http) throws Exception{
-        String[] allRoles = {ROLE_ADMIN.name(), ROLE_USER.name()};
-        http.authorizeRequests().antMatchers(GET, GET_PROFILE).hasAnyAuthority(allRoles);
-        http.authorizeRequests().antMatchers(PUT, UPDATE_USER).hasAnyAuthority(allRoles);
-        http.authorizeRequests().antMatchers(POST, ADD_PROFILE_PICTURE).hasAnyAuthority(allRoles);
-        http.authorizeRequests().antMatchers(DELETE, DELETE_PROFILE_PICTURE).hasAnyAuthority(allRoles);
-    }
-
-    private void setAuthorizeRequestsAdmin(HttpSecurity http) throws Exception{
-        http.authorizeRequests().antMatchers(GET, GET_USERS, GET_ROLES).hasAnyAuthority(ROLE_ADMIN.name());
-        http.authorizeRequests().antMatchers(POST, ADD_ROLE).hasAnyAuthority(ROLE_ADMIN.name());
-        http.authorizeRequests().antMatchers(DELETE, REMOVE_ROLE).hasAnyAuthority(ROLE_ADMIN.name());
-    }
-
-    private void setAuthorizeRequestsUser(HttpSecurity http) throws Exception{
-        http.authorizeRequests().antMatchers(POST, POST_LIST, POST_ITEM).hasAnyAuthority(ROLE_USER.name());
-        http.authorizeRequests().antMatchers(GET, GET_LISTS,GET_ITEMS).hasAnyAuthority(ROLE_USER.name());
-        http.authorizeRequests().antMatchers(PUT, UPDATE_LIST, UPDATE_ITEM).hasAnyAuthority(ROLE_USER.name());
-        http.authorizeRequests().antMatchers(DELETE, DELETE_LIST, DELETE_ITEM).hasAnyAuthority(ROLE_USER.name());
-    }*/
 }

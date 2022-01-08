@@ -5,10 +5,11 @@ import lombok.*;
 
 import java.sql.Timestamp;
 
-
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class UserGetDto extends UserDto {
+
+    private Integer id;
 
     private Timestamp created;
 

@@ -24,13 +24,8 @@ public class JwtService {
     @Value("${jwt.token.issuer}")
     private String issuer;
 
-    private final Algorithm algorithm;
-
-    public JwtService() {
-        this.algorithm = Algorithm.HMAC256(secret.getBytes());
-    }
-
-    public String createAccessToken(String userId, List<String> roles){
+    public String createAccessToken(String userId, List<String> roles) {
+        Algorithm algorithm = Algorithm.HMAC256(secret.getBytes());
         return JWT.create()
                 .withSubject(userId)
                 .withExpiresAt(new Date(System.currentTimeMillis() + tokenDuration * 60 * 1000))
@@ -39,7 +34,8 @@ public class JwtService {
                 .sign(algorithm);
     }
 
-    public String createRefreshToken(String userId){
+    public String createRefreshToken(String userId) {
+        Algorithm algorithm = Algorithm.HMAC256(secret.getBytes());
         return JWT.create()
                 .withSubject(userId)
                 .withExpiresAt(new Date(System.currentTimeMillis() + refreshTokenDuration * 60 * 1000))
@@ -47,7 +43,7 @@ public class JwtService {
                 .sign(algorithm);
     }
 
-    public DecodedJWT decodeJwt(String token){
+    public DecodedJWT decodeJwt(String token) {
         Algorithm algorithm = Algorithm.HMAC256(secret.getBytes());
         JWTVerifier verifier = JWT.require(algorithm).build();
         return verifier.verify(token);

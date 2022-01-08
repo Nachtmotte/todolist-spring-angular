@@ -2,21 +2,42 @@ package com.todolist.backend.service;
 
 import com.todolist.backend.entity.*;
 import com.todolist.backend.repository.*;
+import com.todolist.backend.security.util.CustomUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepo;
 
     private final RoleRepository roleRepo;
 
+    private final PasswordEncoder passwordEncoder;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepo.findByUsername(username);
+        if(user == null) {
+            throw new UsernameNotFoundException("Username not found");
+        }
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        user.getRoles().forEach(role -> {
+            authorities.add(new SimpleGrantedAuthority(role.getName()));
+        });
+        return new CustomUser(user.getId(), user.getUsername(), user.getPassword(), authorities);
+    }
+
     public User save(User user){
-        //user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         Role roleUser = roleRepo.findByName(Roles.ROLE_USER.name());
         user.getRoles().add(roleUser);
         return userRepo.save(user);
@@ -26,12 +47,10 @@ public class UserService {
         return userRepo.findById(userId).orElse(null);
     }
 
-    public User getByUsername(String username){ return userRepo.findByUsername(username); }
-
     public List<User> getAll(){ return userRepo.findAll(); }
 
     public User update(User user) {
-        //user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(userRepo.findById(user.getId()).orElseThrow().getRoles());
         return userRepo.save(user);
     }
@@ -41,16 +60,7 @@ public class UserService {
         return users.isEmpty();
     }
 
-    public User addRoleToUser(String username, String roleName){
-        User user = userRepo.findByUsername(username);
-        Role role = roleRepo.findByName(roleName);
-        user.getRoles().add(role);
-        return userRepo.save(user);
-    }
-
-    public User removeRoleToUser(String username, String roleName){
-        User user = userRepo.findByUsername(username);
-        user.getRoles().removeIf(role -> role.getName().equals(roleName));
-        return userRepo.save(user);
+    public boolean comparePassword (String encryptedPassword, String passwordToCompare) {
+        return passwordEncoder.matches(passwordToCompare, encryptedPassword);
     }
 }

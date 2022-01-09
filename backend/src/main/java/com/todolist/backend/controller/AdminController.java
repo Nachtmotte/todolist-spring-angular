@@ -1,12 +1,17 @@
 package com.todolist.backend.controller;
 
 import com.todolist.backend.controller.util.ModelMapperService;
-import com.todolist.backend.dto.role.RoleDto;
+import com.todolist.backend.dto.role.RoleGetDto;
+import com.todolist.backend.dto.user.PageUserDto;
 import com.todolist.backend.dto.user.UserGetDto;
 import com.todolist.backend.entity.*;
 import com.todolist.backend.service.*;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +19,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 import static com.todolist.backend.entity.Roles.Constants.ROLE_ADMIN;
+import static org.springframework.data.domain.Sort.Direction.ASC;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
-@Slf4j
 @RestController
 @Secured(ROLE_ADMIN)
 @RequiredArgsConstructor
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminController {
+
+    @Value("${pagination.users.number}")
+    int users_per_page;
 
     private final RoleService roleService;
 
@@ -29,7 +38,9 @@ public class AdminController {
     private final ModelMapperService mapperService;
 
     @PostMapping("users/{userId}/roles/{roleId}")
-    public ResponseEntity<Map<String, Object>> addRoleToUser(@PathVariable("userId")Integer userId, @PathVariable("roleId")Integer roleId) {
+    public ResponseEntity<Map<String, Object>> addRoleToUser(
+            @PathVariable("userId") Integer userId,
+            @PathVariable("roleId") Integer roleId) {
         Map<String, Object> bodyResponse = new HashMap<>();
 
         User user = userService.getById(userId);
@@ -58,7 +69,10 @@ public class AdminController {
     }
 
     @DeleteMapping("users/{userId}/roles/{roleId}")
-    public ResponseEntity<Map<String, Object>> removeRoleFromUser(@PathVariable("userId")Integer userId, @PathVariable("roleId")Integer roleId) {
+    public ResponseEntity<Map<String, Object>> removeRoleFromUser(
+            @PathVariable("userId") Integer userId,
+            @PathVariable("roleId") Integer roleId) {
+
         Map<String, Object> bodyResponse = new HashMap<>();
 
         User user = userService.getById(userId);
@@ -81,19 +95,34 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<Map<String, Object>> getUsers(){
+    public ResponseEntity<Map<String, Object>> getUsers(
+            @RequestParam(value = "page", required = false) Integer pageNumber,
+            @RequestParam(value = "orderby", required = false) String order,
+            @RequestParam(value = "direction", required = false) String direction) {
+
+        pageNumber = pageNumber == null ? 0 : pageNumber;
+        order = order == null ? "id" : order;
+        direction = direction == null ? "asc" : direction;
+
         Map<String, Object> bodyResponse = new HashMap<>();
-        List<User> users = userService.getAll();
-        List<UserGetDto> userGetDtos = mapperService.mapUserEntitiesToUserDtos(users);
-        bodyResponse.put("users", userGetDtos);
+        Pageable pageable = PageRequest
+                .of(pageNumber,
+                users_per_page,
+                Sort.by(direction.equals("desc") ? DESC : ASC, order));
+        Page<User> users = userService.getAll(pageable);
+        PageUserDto pageUserDto = mapperService.mapUsersPageToUsersPageDto(users);
+
+        bodyResponse.put("users", pageUserDto);
         return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
     }
 
     @GetMapping("/roles")
-    public ResponseEntity<Map<String, Object>> getRoles(){
+    public ResponseEntity<Map<String, Object>> getRoles() {
         Map<String, Object> bodyResponse = new HashMap<>();
+
         List<Role> roles = roleService.getAll();
-        List<RoleDto> rolesDto = mapperService.mapRoleEntitiesToRoleDtos(roles);
+        List<RoleGetDto> rolesDto = mapperService.mapRoleEntitiesToRoleDtos(roles);
+
         bodyResponse.put("roles", rolesDto);
         return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
     }

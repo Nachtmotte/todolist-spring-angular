@@ -10,6 +10,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.*;
 
 import static com.todolist.backend.entity.Roles.Constants.*;
@@ -37,7 +38,6 @@ public class UserController {
         UserGetDto userGetDto = mapperService.mapUserEntityToUserGetDto(user);
 
         bodyResponse.put("user", userGetDto);
-
         return new ResponseEntity<>(bodyResponse, HttpStatus.CREATED);
     }
 
@@ -56,4 +56,60 @@ public class UserController {
         bodyResponse.put("user", userDto);
         return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
     }
+
+    @Secured({ROLE_ADMIN, ROLE_USER})
+    @PutMapping("/{userId}")
+    public ResponseEntity<Map<String, Object>> updateUser(
+            Principal principal,
+            @PathVariable("userId") Integer userId,
+            @Valid @RequestBody UserUpdateDto requestUserDto) {
+
+        Map<String, Object> bodyResponse = new HashMap<>();
+
+        int sessionId = Integer.parseInt(principal.getName());
+        if (sessionId != userId) {
+            bodyResponse.put("errorMessage", "Login to edit user information");
+            return new ResponseEntity<>(bodyResponse, HttpStatus.FORBIDDEN);
+        }
+
+        User currentUser = userService.getById(userId);
+        if (currentUser == null) {
+            bodyResponse.put("errorMessage", "There is no such user in the system");
+            return new ResponseEntity<>(bodyResponse, HttpStatus.NOT_FOUND);
+        }
+
+        if (!userService.verifyUniqueDataForUpdate(userId, requestUserDto.getUsername())) {
+            bodyResponse.put("errorMessage", "There is already users with this username in the system");
+            return new ResponseEntity<>(bodyResponse, HttpStatus.CONFLICT);
+        }
+
+        if (!userService.comparePassword(currentUser.getPassword(), requestUserDto.getPassword())) {
+            bodyResponse.put("errorMessage", "The current password is incorrect");
+            return new ResponseEntity<>(bodyResponse, HttpStatus.BAD_REQUEST);
+        }
+
+        User user = mapperService.mapUserUpdateDtoToUserEntity(requestUserDto);
+        user.setId(userId);
+        user.setEmail(currentUser.getEmail());
+        user.setCreated(currentUser.getCreated());
+        user.setVerified(currentUser.isVerified());
+        user.setProfilePicture(currentUser.getProfilePicture());
+        user = userService.update(user);
+        UserGetDto userGetDto = mapperService.mapUserEntityToUserGetDto(user);
+
+        bodyResponse.put("user", userGetDto);
+        return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
+    }
+
+    /*
+    @Secured({ROLE_ADMIN, ROLE_USER})
+    @PutMapping("/{userId}/password")
+    public ResponseEntity<Map<String, Object>> updatePassword(
+            Principal principal,
+            @PathVariable("userId") Integer userId,
+            @Valid @RequestBody UserUpdatePasswordDto requestPasswordDto
+    ){
+        Map<String, Object> bodyResponse = new HashMap<>();
+
+    }*/
 }

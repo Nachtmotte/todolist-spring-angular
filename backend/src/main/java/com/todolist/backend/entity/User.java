@@ -26,7 +26,7 @@ public class User {
     @Column(unique = true, updatable = false)
     private String email;
 
-    @Column(unique = true, updatable = false)
+    @Column(unique = true)
     private String username;
 
     private String password;
@@ -49,7 +49,7 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Collection<Role> roles = new ArrayList<>();
+    private Set<Role> roles = new HashSet<>();
 
     @PrePersist
     private void prePersistUser() {

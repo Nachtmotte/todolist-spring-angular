@@ -1,13 +1,13 @@
 package com.todolist.backend.controller.util;
 
-import com.todolist.backend.dto.role.RoleDto;
-import com.todolist.backend.dto.user.UserGetDto;
-import com.todolist.backend.dto.user.UserPostDto;
+import com.todolist.backend.dto.role.RoleGetDto;
+import com.todolist.backend.dto.user.*;
 import com.todolist.backend.entity.Role;
 import com.todolist.backend.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -22,17 +22,21 @@ public class ModelMapperService {
         return mapper.map(userPostDto, User.class);
     }
 
+    public User mapUserUpdateDtoToUserEntity(UserUpdateDto userUpdateDto) {
+        return mapper.map(userUpdateDto, User.class);
+    }
+
     public UserGetDto mapUserEntityToUserGetDto(User user) {
         return mapper.map(user, UserGetDto.class);
     }
 
-    public List<UserGetDto> mapUserEntitiesToUserDtos(List<User> users) {
-        return mapper.map(users, new TypeToken<List<UserGetDto>>() {
-        }.getType());
+
+    public PageUserDto mapUsersPageToUsersPageDto(Page<User> users){
+        return mapper.map(users, PageUserDto.class);
     }
 
-    public List<RoleDto> mapRoleEntitiesToRoleDtos(List<Role> roles) {
-        return mapper.map(roles, new TypeToken<List<RoleDto>>() {
+    public List<RoleGetDto> mapRoleEntitiesToRoleDtos(List<Role> roles) {
+        return mapper.map(roles, new TypeToken<List<RoleGetDto>>() {
         }.getType());
     }
 }

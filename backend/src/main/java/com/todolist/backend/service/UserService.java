@@ -4,6 +4,8 @@ import com.todolist.backend.entity.*;
 import com.todolist.backend.repository.*;
 import com.todolist.backend.security.util.CustomUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,17 +28,15 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepo.findByUsername(username);
-        if(user == null) {
+        if (user == null) {
             throw new UsernameNotFoundException("Username not found");
         }
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        user.getRoles().forEach(role -> {
-            authorities.add(new SimpleGrantedAuthority(role.getName()));
-        });
+        user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
         return new CustomUser(user.getId(), user.getUsername(), user.getPassword(), authorities);
     }
 
-    public User save(User user){
+    public User save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Role roleUser = roleRepo.findByName(Roles.ROLE_USER.name());
         user.getRoles().add(roleUser);
@@ -47,7 +47,9 @@ public class UserService implements UserDetailsService {
         return userRepo.findById(userId).orElse(null);
     }
 
-    public List<User> getAll(){ return userRepo.findAll(); }
+    public Page<User> getAll(Pageable pageable) {
+        return userRepo.findAll(pageable);
+    }
 
     public User update(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -60,7 +62,12 @@ public class UserService implements UserDetailsService {
         return users.isEmpty();
     }
 
-    public boolean comparePassword (String encryptedPassword, String passwordToCompare) {
+    public boolean verifyUniqueDataForUpdate(Integer userId, String username) {
+        User user = userRepo.findByUsername(username);
+        return user == null || user.getId() == userId;
+    }
+
+    public boolean comparePassword(String encryptedPassword, String passwordToCompare) {
         return passwordEncoder.matches(passwordToCompare, encryptedPassword);
     }
 }

@@ -3,7 +3,8 @@ package com.todolist.backend.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -21,7 +22,7 @@ public class Role {
     private String name;
 
     @ManyToMany(mappedBy = "roles")
-    private List<User> users;
+    private Set<User> users = new HashSet<>();
 
     @Override
     public String toString() {

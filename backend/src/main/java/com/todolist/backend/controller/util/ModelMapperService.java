@@ -22,14 +22,9 @@ public class ModelMapperService {
         return mapper.map(userPostDto, User.class);
     }
 
-    public User mapUserUpdateDtoToUserEntity(UserUpdateDto userUpdateDto) {
-        return mapper.map(userUpdateDto, User.class);
-    }
-
     public UserGetDto mapUserEntityToUserGetDto(User user) {
         return mapper.map(user, UserGetDto.class);
     }
-
 
     public PageUserDto mapUsersPageToUsersPageDto(Page<User> users){
         return mapper.map(users, PageUserDto.class);

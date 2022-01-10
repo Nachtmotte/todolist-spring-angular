@@ -28,7 +28,7 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> createUser(@Valid @RequestBody UserPostDto requestUser) {
         Map<String, Object> bodyResponse = new HashMap<>();
 
-        if (!userService.verifyUniqueData(requestUser.getUsername(), requestUser.getEmail())) {
+        if (!userService.isUniqueData(requestUser.getUsername(), requestUser.getEmail())) {
             bodyResponse.put("errorMessage", "There is already users with this data in the system");
             return new ResponseEntity<>(bodyResponse, HttpStatus.CONFLICT);
         }
@@ -78,38 +78,65 @@ public class UserController {
             return new ResponseEntity<>(bodyResponse, HttpStatus.NOT_FOUND);
         }
 
-        if (!userService.verifyUniqueDataForUpdate(userId, requestUserDto.getUsername())) {
+        if (!userService.isUniqueDataForUpdate(userId, requestUserDto.getUsername())) {
             bodyResponse.put("errorMessage", "There is already users with this username in the system");
             return new ResponseEntity<>(bodyResponse, HttpStatus.CONFLICT);
         }
 
-        if (!userService.comparePassword(currentUser.getPassword(), requestUserDto.getPassword())) {
+        if (userService.areDifferentPasswords(currentUser.getPassword(), requestUserDto.getPassword())) {
             bodyResponse.put("errorMessage", "The current password is incorrect");
             return new ResponseEntity<>(bodyResponse, HttpStatus.BAD_REQUEST);
         }
 
-        User user = mapperService.mapUserUpdateDtoToUserEntity(requestUserDto);
-        user.setId(userId);
-        user.setEmail(currentUser.getEmail());
-        user.setCreated(currentUser.getCreated());
-        user.setVerified(currentUser.isVerified());
-        user.setProfilePicture(currentUser.getProfilePicture());
-        user = userService.update(user);
+        User user = userService.update(
+                currentUser,
+                requestUserDto.getFirstname(),
+                requestUserDto.getLastname(),
+                requestUserDto.getUsername(),
+                requestUserDto.getPassword());
         UserGetDto userGetDto = mapperService.mapUserEntityToUserGetDto(user);
 
         bodyResponse.put("user", userGetDto);
         return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
     }
 
-    /*
+
     @Secured({ROLE_ADMIN, ROLE_USER})
     @PutMapping("/{userId}/password")
     public ResponseEntity<Map<String, Object>> updatePassword(
             Principal principal,
             @PathVariable("userId") Integer userId,
             @Valid @RequestBody UserUpdatePasswordDto requestPasswordDto
-    ){
+    ) {
+
         Map<String, Object> bodyResponse = new HashMap<>();
 
-    }*/
+        int sessionId = Integer.parseInt(principal.getName());
+        if (sessionId != userId) {
+            bodyResponse.put("errorMessage", "Login to edit user information");
+            return new ResponseEntity<>(bodyResponse, HttpStatus.FORBIDDEN);
+        }
+
+        User currentUser = userService.getById(userId);
+        if (currentUser == null) {
+            bodyResponse.put("errorMessage", "There is no such user in the system");
+            return new ResponseEntity<>(bodyResponse, HttpStatus.NOT_FOUND);
+        }
+
+        if (userService.areDifferentPasswords(currentUser.getPassword(), requestPasswordDto.getCurrentPassword())) {
+            bodyResponse.put("errorMessage", "The current password is incorrect");
+            return new ResponseEntity<>(bodyResponse, HttpStatus.BAD_REQUEST);
+        }
+
+        if (requestPasswordDto.getCurrentPassword().equals(requestPasswordDto.getNewPassword())) {
+            bodyResponse.put("errorMessage", "The new password is the same as the current");
+            return new ResponseEntity<>(bodyResponse, HttpStatus.BAD_REQUEST);
+        }
+
+        User user = userService.updatePassword(currentUser, requestPasswordDto.getNewPassword());
+        UserGetDto userGetDto = mapperService.mapUserEntityToUserGetDto(user);
+
+        bodyResponse.put("user", userGetDto);
+        return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
+    }
 }

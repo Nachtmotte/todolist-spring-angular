@@ -51,23 +51,30 @@ public class UserService implements UserDetailsService {
         return userRepo.findAll(pageable);
     }
 
-    public User update(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(userRepo.findById(user.getId()).orElseThrow().getRoles());
+    public User update(User user, String firstname, String lastname, String username, String password) {
+        user.setFirstname(firstname);
+        user.setLastname(lastname);
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
         return userRepo.save(user);
     }
 
-    public boolean verifyUniqueData(String username, String email) {
+    public User updatePassword(User user, String password){
+        user.setPassword(passwordEncoder.encode(password));
+        return userRepo.save(user);
+    }
+
+    public boolean isUniqueData(String username, String email) {
         List<User> users = userRepo.findByUsernameOrEmail(username, email);
         return users.isEmpty();
     }
 
-    public boolean verifyUniqueDataForUpdate(Integer userId, String username) {
+    public boolean isUniqueDataForUpdate(Integer userId, String username) {
         User user = userRepo.findByUsername(username);
         return user == null || user.getId() == userId;
     }
 
-    public boolean comparePassword(String encryptedPassword, String passwordToCompare) {
-        return passwordEncoder.matches(passwordToCompare, encryptedPassword);
+    public boolean areDifferentPasswords(String encryptedPassword, String passwordToCompare) {
+        return !passwordEncoder.matches(passwordToCompare, encryptedPassword);
     }
 }

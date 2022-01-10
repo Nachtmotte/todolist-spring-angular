@@ -13,7 +13,7 @@ import javax.persistence.*;
 public class ProfilePicture {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private int id;
 
     @Column(name = "name", unique = true)

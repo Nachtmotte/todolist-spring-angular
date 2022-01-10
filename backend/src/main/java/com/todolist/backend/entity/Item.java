@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 public class Item {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private int id;
 
     private String text;

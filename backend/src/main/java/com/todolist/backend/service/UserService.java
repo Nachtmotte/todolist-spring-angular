@@ -64,6 +64,17 @@ public class UserService implements UserDetailsService {
         return userRepo.save(user);
     }
 
+    public void delete(User user){
+        user.setRoles(new HashSet<>());
+        userRepo.save(user);
+        userRepo.deleteById(user.getId());
+    }
+
+    public void deleteAll(){
+        List<User> users = userRepo.findAll();
+        users.forEach(this::delete);
+    }
+
     public boolean isUniqueData(String username, String email) {
         List<User> users = userRepo.findByUsernameOrEmail(username, email);
         return users.isEmpty();

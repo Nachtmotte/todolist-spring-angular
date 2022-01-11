@@ -43,16 +43,18 @@ public class UserController {
 
     @Secured({ROLE_ADMIN, ROLE_USER})
     @GetMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> getUserById(@PathVariable("id") Integer id) {
+    public ResponseEntity<Map<String, Object>> getUserById(Principal principal, @PathVariable("id") Integer userId) {
         Map<String, Object> bodyResponse = new HashMap<>();
-        User user = userService.getById(id);
 
-        if (user == null) {
-            bodyResponse.put("errorMessage", "There is no such user in the system");
-            return new ResponseEntity<>(bodyResponse, HttpStatus.NOT_FOUND);
+        int sessionId = Integer.parseInt(principal.getName());
+        if (sessionId != userId) {
+            bodyResponse.put("errorMessage", "Login to see user information");
+            return new ResponseEntity<>(bodyResponse, HttpStatus.FORBIDDEN);
         }
 
+        User user = userService.getById(userId);
         UserGetDto userDto = mapperService.mapUserEntityToUserGetDto(user);
+
         bodyResponse.put("user", userDto);
         return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
     }

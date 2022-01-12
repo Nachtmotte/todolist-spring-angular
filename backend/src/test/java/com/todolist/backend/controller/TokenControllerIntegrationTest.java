@@ -6,18 +6,18 @@ import com.todolist.backend.repository.RoleRepository;
 import com.todolist.backend.security.util.JwtService;
 import com.todolist.backend.service.UserService;
 import org.junit.After;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.junit.Assert.assertTrue;
 import static com.todolist.backend.entity.Roles.Constants.ROLE_USER;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -25,7 +25,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-class TokenControllerIntegrationTest {
+public class TokenControllerIntegrationTest {
 
     @Autowired
     JwtService jwtService;
@@ -46,8 +46,8 @@ class TokenControllerIntegrationTest {
 
     private User testUser;
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
 
         Role roleUser = new Role();
@@ -73,7 +73,7 @@ class TokenControllerIntegrationTest {
     //        -- Tests for GET REFRESH TOKEN
     // -----------------------------------------------------
     @Test
-    void givenValidRefreshToken_whenGetRequest_thenShouldResponseOk() throws Exception {
+    public void givenValidRefreshToken_whenGetRequest_thenShouldResponseOk() throws Exception {
 
         //given
         String refreshToken = generateRefreshToken();
@@ -83,8 +83,33 @@ class TokenControllerIntegrationTest {
                 .header("Authorization", "Bearer " + refreshToken));
 
         //then
-        result.andDo(MockMvcResultHandlers.print());
         result.andExpect(status().isOk());
+        String content = result.andReturn().getResponse().getContentAsString();
+        assertTrue(content.contains("accessToken") && content.contains("refreshToken"));
+    }
+
+    @Test
+    public void givenInvalidRefreshToken_whenGetRequest_thenShouldResponseForbidden() throws Exception {
+
+        //given
+        String refreshToken = generateRefreshToken().replace('.','_');
+
+        //when
+        ResultActions result = mockMvc.perform(get("/token/refresh")
+                .header("Authorization", "Bearer " + refreshToken));
+
+        //then
+        result.andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void whenGetRequestWithoutRefreshToken_thenShouldResponseForbidden() throws Exception {
+
+        //when
+        ResultActions result = mockMvc.perform(get("/token/refresh"));
+
+        //then
+        result.andExpect(status().isForbidden());
     }
 
     // -----------------------------------------------------

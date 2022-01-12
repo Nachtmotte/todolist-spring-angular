@@ -20,6 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.stream.Collectors;
 
 import static com.todolist.backend.entity.Roles.Constants.*;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -46,26 +47,31 @@ public class UserControllerIntegrationTest {
 
     private MockMvc mockMvc;
 
-    private User user;
+    private User testUser;
 
     @Before
     public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
 
-        Role roleAdmin = new Role();
         Role roleUser = new Role();
-        roleAdmin.setName(ROLE_ADMIN);
         roleUser.setName(ROLE_USER);
-        roleRepo.save(roleAdmin);
         roleRepo.save(roleUser);
 
-        user = new User();
-        user.setFirstname("user");
-        user.setLastname("test");
-        user.setEmail("user_test@email.com");
-        user.setUsername("user.test");
-        user.setPassword("UserTest2022");
-        user = userService.save(user);
+        testUser = new User();
+        testUser.setFirstname("test");
+        testUser.setLastname("user");
+        testUser.setEmail("test_user@email.com");
+        testUser.setUsername("test.user");
+        testUser.setPassword("TestUser2022");
+        testUser = userService.save(testUser);
+
+        User user = new User();
+        user.setFirstname("Juan");
+        user.setLastname("Perez");
+        user.setEmail("juan_perez@email.com");
+        user.setUsername("juan.perez");
+        user.setPassword("JuanPerez2022");
+        userService.save(user);
     }
 
     @After
@@ -74,6 +80,9 @@ public class UserControllerIntegrationTest {
         roleRepo.deleteAll();
     }
 
+    // -----------------------------------------------------
+    //             -- Tests for CREATE USER
+    // -----------------------------------------------------
     @Test
     public void givenValidUserData_whenPostRequest_thenShouldResponseCreated() throws Exception {
 
@@ -83,26 +92,32 @@ public class UserControllerIntegrationTest {
                 "\"lastname\": \"Sanchez\", " +
                 "\"email\": \"pablo_sanchez@email.com\", " +
                 "\"username\": \"pablo.sanchez\", " +
-                "\"password\" : \"Pablo2022\"}";
+                "\"password\": \"Pablo2022\"}";
 
         //when
         ResultActions result = mockMvc.perform(post("/users")
-                        .content(user)
-                        .contentType(APPLICATION_JSON_VALUE));
+                .content(user)
+                .contentType(APPLICATION_JSON_VALUE));
 
         //then
         result.andExpect(status().isCreated());
+        String content = result.andReturn().getResponse().getContentAsString();
+        assertTrue(content.contains(
+                "\"firstname\":\"Pablo\"," +
+                "\"lastname\":\"Sanchez\"," +
+                "\"email\":\"pablo_sanchez@email.com\"," +
+                "\"username\":\"pablo.sanchez\""));
     }
 
     @Test
     public void givenExistingUserData_whenPostRequest_thenShouldResponseConflict() throws Exception {
         //given
         String user = "{" +
-                "\"firstname\": \"user\", " +
-                "\"lastname\": \"test\", " +
-                "\"email\": \"user_test@email.com\", " +
-                "\"username\": \"user.test\", " +
-                "\"password\" : \"UserTest2022\"}";
+                "\"firstname\": \"test\", " +
+                "\"lastname\": \"user\", " +
+                "\"email\": \"test_user@email.com\", " +
+                "\"username\": \"test.user\", " +
+                "\"password\": \"TestUser2022\"}";
 
         //when
         ResultActions result = mockMvc.perform(post("/users")
@@ -113,10 +128,13 @@ public class UserControllerIntegrationTest {
         result.andExpect(status().isConflict());
     }
 
+    // -----------------------------------------------------
+    //              -- Tests for GET USER
+    // -----------------------------------------------------
     @Test
     public void givenValidUserIdAndValidToken_whenGetRequest_thenShouldResponseOk() throws Exception {
         //given
-        String userId = Integer.toString(user.getId());
+        String userId = Integer.toString(testUser.getId());
 
         //when
         ResultActions result = mockMvc.perform(get("/users/" + userId)
@@ -124,12 +142,18 @@ public class UserControllerIntegrationTest {
 
         //then
         result.andExpect(status().isOk());
+        String content = result.andReturn().getResponse().getContentAsString();
+        assertTrue(content.contains(
+                "\"firstname\":\"test\"," +
+                "\"lastname\":\"user\"," +
+                "\"email\":\"test_user@email.com\"," +
+                "\"username\":\"test.user\""));
     }
 
     @Test
     public void givenValidUserIdWithoutToken_whenGetRequest_thenShouldResponseForbidden() throws Exception {
         //given
-        String userId = Integer.toString(user.getId());
+        String userId = Integer.toString(testUser.getId());
 
         //when
         ResultActions result = mockMvc.perform(get("/users/" + userId));
@@ -141,7 +165,7 @@ public class UserControllerIntegrationTest {
     @Test
     public void givenInvalidUserIdAndValidToken_whenGetRequest_thenShouldResponseForbidden() throws Exception {
         //given
-        String userId = Integer.toString(user.getId() + 1);
+        String userId = Integer.toString(testUser.getId() + 1);
 
         //when
         ResultActions result = mockMvc.perform(get("/users/" + userId)
@@ -151,8 +175,221 @@ public class UserControllerIntegrationTest {
         result.andExpect(status().isForbidden());
     }
 
-    private String generateToken(){
-        return jwtService.createAccessToken(Integer.toString(user.getId()),
-                user.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
+    // -----------------------------------------------------
+    //          -- Tests for UPDATE USER DATA
+    // -----------------------------------------------------
+    @Test
+    public void givenValidUserDataAndValidUserIdWithToken_whenPutRequest_thenShouldResponseOk() throws Exception {
+
+        //given
+        String testUserId = Integer.toString(testUser.getId());
+        String testUserUpdateData = "{" +
+                "\"firstname\": \"user\", " +
+                "\"lastname\": \"test\", " +
+                "\"username\": \"user.test\", " +
+                "\"password\": \"TestUser2022\"}";
+
+        //when
+        ResultActions result = mockMvc.perform(put("/users/" + testUserId)
+                .content(testUserUpdateData)
+                .contentType(APPLICATION_JSON_VALUE)
+                .header("Authorization", "Bearer " + generateToken()));
+
+        //then
+        result.andExpect(status().isOk());
+        String content = result.andReturn().getResponse().getContentAsString();
+        assertTrue(content.contains(
+                "\"firstname\":\"user\"," +
+                "\"lastname\":\"test\"," +
+                "\"email\":\"test_user@email.com\"," +
+                "\"username\":\"user.test\""));
+    }
+
+    @Test
+    public void givenValidUserDataAndInvalidUserIdWithToken_whenPutRequest_thenShouldResponseForbidden() throws Exception {
+
+        //given
+        String testUserId = Integer.toString(testUser.getId() + 1);
+        String testUserUpdateData = "{" +
+                "\"firstname\": \"user\", " +
+                "\"lastname\": \"test\", " +
+                "\"username\": \"user.test\", " +
+                "\"password\": \"TestUser2022\"}";
+
+        //when
+        ResultActions result = mockMvc.perform(put("/users/" + testUserId)
+                .content(testUserUpdateData)
+                .contentType(APPLICATION_JSON_VALUE)
+                .header("Authorization", "Bearer " + generateToken()));
+
+        //then
+        result.andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void givenExistingUserDataAndValidUserIdWithToken_whenPutRequest_thenShouldResponseConflict() throws Exception {
+
+        //given
+        String testUserId = Integer.toString(testUser.getId());
+        String testUserUpdateData = "{" +
+                "\"firstname\": \"user\", " +
+                "\"lastname\": \"test\", " +
+                "\"username\": \"juan.perez\", " +
+                "\"password\": \"TestUser2022\"}";
+
+        //when
+        ResultActions result = mockMvc.perform(put("/users/" + testUserId)
+                .content(testUserUpdateData)
+                .contentType(APPLICATION_JSON_VALUE)
+                .header("Authorization", "Bearer " + generateToken()));
+
+        //then
+        result.andExpect(status().isConflict());
+    }
+
+    @Test
+    public void givenInvalidUserPasswordAndValidDataAndUserIdWithToken_whenPutRequest_thenShouldResponseBadRequest() throws Exception {
+
+        //given
+        String testUserId = Integer.toString(testUser.getId());
+        String testUserUpdateData = "{" +
+                "\"firstname\": \"user\", " +
+                "\"lastname\": \"test\", " +
+                "\"username\": \"user.test\", " +
+                "\"password\": \"UserTest2022\"}";
+
+        //when
+        ResultActions result = mockMvc.perform(put("/users/" + testUserId)
+                .content(testUserUpdateData)
+                .contentType(APPLICATION_JSON_VALUE)
+                .header("Authorization", "Bearer " + generateToken()));
+
+        //then
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void givenValidUserDataAndValidUserIdWithoutToken_whenPutRequest_thenShouldResponseForbidden() throws Exception {
+
+        //given
+        String testUserId = Integer.toString(testUser.getId());
+        String testUserUpdateData = "{" +
+                "\"firstname\": \"user\", " +
+                "\"lastname\": \"test\", " +
+                "\"username\": \"user.test\", " +
+                "\"password\": \"TestUser2022\"}";
+
+        //when
+        ResultActions result = mockMvc.perform(put("/users/" + testUserId)
+                .content(testUserUpdateData)
+                .contentType(APPLICATION_JSON_VALUE));
+
+        //then
+        result.andExpect(status().isForbidden());
+    }
+
+    // -----------------------------------------------------
+    //        -- Tests for UPDATE USER PASSWORD
+    // -----------------------------------------------------
+    @Test
+    public void givenValidUserPasswordAndValidUserIdWithToken_whenPutRequest_thenShouldResponseOk() throws Exception {
+
+        //given
+        String testUserId = Integer.toString(testUser.getId());
+        String testUserUpdatePassword = "{" +
+                "\"currentPassword\": \"TestUser2022\", " +
+                "\"newPassword\": \"TestUser2024\"}";
+
+        //when
+        ResultActions result = mockMvc.perform(put("/users/" + testUserId + "/password")
+                .content(testUserUpdatePassword)
+                .contentType(APPLICATION_JSON_VALUE)
+                .header("Authorization", "Bearer " + generateToken()));
+
+        //then
+        result.andExpect(status().isOk());
+    }
+
+    @Test
+    public void givenValidUserPasswordAndInvalidUserIdWithToken_whenPutRequest_thenShouldResponseForbidden() throws Exception {
+
+        //given
+        String testUserId = Integer.toString(testUser.getId() + 1);
+        String testUserUpdatePassword = "{" +
+                "\"currentPassword\": \"TestUser2022\", " +
+                "\"newPassword\": \"TestUser2024\"}";
+
+        //when
+        ResultActions result = mockMvc.perform(put("/users/" + testUserId + "/password")
+                .content(testUserUpdatePassword)
+                .contentType(APPLICATION_JSON_VALUE)
+                .header("Authorization", "Bearer " + generateToken()));
+
+        //then
+        result.andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void givenInvalidUserPasswordAndValidUserIdWithToken_whenPutRequest_thenShouldResponseBadRequest() throws Exception {
+
+        //given
+        String testUserId = Integer.toString(testUser.getId());
+        String testUserUpdatePassword = "{" +
+                "\"currentPassword\": \"TestUser2023\", " +
+                "\"newPassword\": \"TestUser2024\"}";
+
+        //when
+        ResultActions result = mockMvc.perform(put("/users/" + testUserId + "/password")
+                .content(testUserUpdatePassword)
+                .contentType(APPLICATION_JSON_VALUE)
+                .header("Authorization", "Bearer " + generateToken()));
+
+        //then
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void givenTwiceSameUserPasswordAndValidUserIdWithToken_whenPutRequest_thenShouldResponseBadRequest() throws Exception {
+
+        //given
+        String testUserId = Integer.toString(testUser.getId());
+        String testUserUpdatePassword = "{" +
+                "\"currentPassword\": \"TestUser2022\", " +
+                "\"newPassword\": \"TestUser2022\"}";
+
+        //when
+        ResultActions result = mockMvc.perform(put("/users/" + testUserId + "/password")
+                .content(testUserUpdatePassword)
+                .contentType(APPLICATION_JSON_VALUE)
+                .header("Authorization", "Bearer " + generateToken()));
+
+        //then
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void givenValidUserPasswordAndValidUserIdWithoutToken_whenPutRequest_thenShouldResponseForbidden() throws Exception {
+
+        //given
+        String testUserId = Integer.toString(testUser.getId());
+        String testUserUpdatePassword = "{" +
+                "\"currentPassword\": \"TestUser2022\", " +
+                "\"newPassword\": \"TestUser2024\"}";
+
+        //when
+        ResultActions result = mockMvc.perform(put("/users/" + testUserId + "/password")
+                .content(testUserUpdatePassword)
+                .contentType(APPLICATION_JSON_VALUE));
+
+        //then
+        result.andExpect(status().isForbidden());
+    }
+
+    // -----------------------------------------------------
+    //                 -- Private Method
+    // -----------------------------------------------------
+    private String generateToken() {
+        return jwtService.createAccessToken(Integer.toString(testUser.getId()),
+                testUser.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
     }
 }

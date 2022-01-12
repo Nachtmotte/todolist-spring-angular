@@ -74,17 +74,12 @@ public class UserController {
             return new ResponseEntity<>(bodyResponse, HttpStatus.FORBIDDEN);
         }
 
-        User currentUser = userService.getById(userId);
-        if (currentUser == null) {
-            bodyResponse.put("errorMessage", "There is no such user in the system");
-            return new ResponseEntity<>(bodyResponse, HttpStatus.NOT_FOUND);
-        }
-
         if (!userService.isUniqueDataForUpdate(userId, requestUserDto.getUsername())) {
             bodyResponse.put("errorMessage", "There is already users with this username in the system");
             return new ResponseEntity<>(bodyResponse, HttpStatus.CONFLICT);
         }
 
+        User currentUser = userService.getById(userId);
         if (userService.areDifferentPasswords(currentUser.getPassword(), requestUserDto.getPassword())) {
             bodyResponse.put("errorMessage", "The current password is incorrect");
             return new ResponseEntity<>(bodyResponse, HttpStatus.BAD_REQUEST);
@@ -120,11 +115,6 @@ public class UserController {
         }
 
         User currentUser = userService.getById(userId);
-        if (currentUser == null) {
-            bodyResponse.put("errorMessage", "There is no such user in the system");
-            return new ResponseEntity<>(bodyResponse, HttpStatus.NOT_FOUND);
-        }
-
         if (userService.areDifferentPasswords(currentUser.getPassword(), requestPasswordDto.getCurrentPassword())) {
             bodyResponse.put("errorMessage", "The current password is incorrect");
             return new ResponseEntity<>(bodyResponse, HttpStatus.BAD_REQUEST);
@@ -135,10 +125,8 @@ public class UserController {
             return new ResponseEntity<>(bodyResponse, HttpStatus.BAD_REQUEST);
         }
 
-        User user = userService.updatePassword(currentUser, requestPasswordDto.getNewPassword());
-        UserGetDto userGetDto = mapperService.mapUserEntityToUserGetDto(user);
+        userService.updatePassword(currentUser, requestPasswordDto.getNewPassword());
 
-        bodyResponse.put("user", userGetDto);
         return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
     }
 }

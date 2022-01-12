@@ -13,9 +13,6 @@ import javax.servlet.http.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/token", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -28,7 +25,7 @@ public class TokenController {
     @GetMapping("/refresh")
     public ResponseEntity<Map<String, Object>> refreshToken(HttpServletRequest request) {
         Map<String, Object> bodyResponse = new HashMap<>();
-        String authorizationHeader = request.getHeader(AUTHORIZATION);
+        String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
             try {
                 String refreshToken = authorizationHeader.substring("Bearer ".length());
@@ -42,11 +39,11 @@ public class TokenController {
                 return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
             }catch (Exception e){
                 bodyResponse.put("errorMessage", e.getMessage());
-                return new ResponseEntity<>(bodyResponse, FORBIDDEN);
+                return new ResponseEntity<>(bodyResponse, HttpStatus.FORBIDDEN);
             }
         }else{
             bodyResponse.put("errorMessage", "Refresh token is missing");
-            return new ResponseEntity<>(bodyResponse, FORBIDDEN);
+            return new ResponseEntity<>(bodyResponse, HttpStatus.FORBIDDEN);
         }
     }
 }

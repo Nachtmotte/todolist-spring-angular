@@ -32,4 +32,12 @@ public class RoleService {
         user.getRoles().removeIf(r -> r.getId() == roleId);
         return userRepo.save(user);
     }
+
+    public Role save(Role role){
+        return roleRepo.save(role);
+    }
+
+    public void deleteAll(){
+        roleRepo.deleteAll();
+    }
 }

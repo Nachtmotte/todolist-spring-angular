@@ -26,7 +26,11 @@ public class ModelMapperService {
         return mapper.map(user, UserGetDto.class);
     }
 
-    public PageUserDto mapUsersPageToUsersPageDto(Page<User> users){
+    public UserGetWithRolesDto mapUserEntityToUserGetWithRolesDto(User user) {
+        return mapper.map(user, UserGetWithRolesDto.class);
+    }
+
+    public PageUserDto mapUsersPageToUsersPageDto(Page<User> users) {
         return mapper.map(users, PageUserDto.class);
     }
 

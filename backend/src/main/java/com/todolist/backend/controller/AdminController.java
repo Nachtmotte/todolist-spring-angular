@@ -3,7 +3,7 @@ package com.todolist.backend.controller;
 import com.todolist.backend.controller.util.ModelMapperService;
 import com.todolist.backend.dto.role.RoleGetDto;
 import com.todolist.backend.dto.user.PageUserDto;
-import com.todolist.backend.dto.user.UserGetDto;
+import com.todolist.backend.dto.user.UserGetWithRolesDto;
 import com.todolist.backend.entity.*;
 import com.todolist.backend.service.*;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +61,7 @@ public class AdminController {
         }
 
         user = roleService.addRoleToUser(user, role);
-        UserGetDto userGetDto = mapperService.mapUserEntityToUserGetDto(user);
+        UserGetWithRolesDto userGetDto = mapperService.mapUserEntityToUserGetWithRolesDto(user);
 
         bodyResponse.put("user", userGetDto);
 
@@ -87,7 +87,7 @@ public class AdminController {
         }
 
         user = roleService.removeRoleFromUser(user, roleId);
-        UserGetDto userGetDto = mapperService.mapUserEntityToUserGetDto(user);
+        UserGetWithRolesDto userGetDto = mapperService.mapUserEntityToUserGetWithRolesDto(user);
 
         bodyResponse.put("user", userGetDto);
 

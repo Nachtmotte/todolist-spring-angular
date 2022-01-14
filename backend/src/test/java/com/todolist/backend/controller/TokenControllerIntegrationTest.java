@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.*;
 import static com.todolist.backend.entity.Roles.Constants.ROLE_USER;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -84,8 +84,8 @@ public class TokenControllerIntegrationTest {
 
         //then
         result.andExpect(status().isOk());
-        String content = result.andReturn().getResponse().getContentAsString();
-        assertTrue(content.contains("accessToken") && content.contains("refreshToken"));
+        result.andExpect(jsonPath("$.accessToken", is(not(empty()))));
+        result.andExpect(jsonPath("$.refreshToken", is(not(empty()))));
     }
 
     @Test

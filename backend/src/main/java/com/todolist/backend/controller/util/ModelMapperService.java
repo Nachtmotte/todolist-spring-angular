@@ -1,7 +1,9 @@
 package com.todolist.backend.controller.util;
 
+import com.todolist.backend.dto.picture.ProfilePictureDto;
 import com.todolist.backend.dto.role.RoleGetDto;
 import com.todolist.backend.dto.user.*;
+import com.todolist.backend.entity.ProfilePicture;
 import com.todolist.backend.entity.Role;
 import com.todolist.backend.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -37,5 +39,13 @@ public class ModelMapperService {
     public List<RoleGetDto> mapRoleEntitiesToRoleDtos(List<Role> roles) {
         return mapper.map(roles, new TypeToken<List<RoleGetDto>>() {
         }.getType());
+    }
+
+    public ProfilePicture mapProfilePictureDtoToProfilePictureEntity(ProfilePictureDto profilePictureDto) {
+        return mapper.map(profilePictureDto, ProfilePicture.class);
+    }
+
+    public ProfilePictureDto mapProfilePictureEntityToProfilePictureDto(ProfilePicture profilePicture){
+        return mapper.map(profilePicture, ProfilePictureDto.class);
     }
 }

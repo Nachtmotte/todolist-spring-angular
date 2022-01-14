@@ -20,7 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.stream.Collectors;
 
 import static com.todolist.backend.entity.Roles.Constants.*;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -101,12 +101,10 @@ public class UserControllerIntegrationTest {
 
         //then
         result.andExpect(status().isCreated());
-        String content = result.andReturn().getResponse().getContentAsString();
-        assertTrue(content.contains(
-                "\"firstname\":\"Pablo\"," +
-                "\"lastname\":\"Sanchez\"," +
-                "\"email\":\"pablo_sanchez@email.com\"," +
-                "\"username\":\"pablo.sanchez\""));
+        result.andExpect(jsonPath("$.user.firstname", is("Pablo")));
+        result.andExpect(jsonPath("$.user.lastname", is("Sanchez")));
+        result.andExpect(jsonPath("$.user.email", is("pablo_sanchez@email.com")));
+        result.andExpect(jsonPath("$.user.username", is("pablo.sanchez")));
     }
 
     @Test
@@ -142,12 +140,10 @@ public class UserControllerIntegrationTest {
 
         //then
         result.andExpect(status().isOk());
-        String content = result.andReturn().getResponse().getContentAsString();
-        assertTrue(content.contains(
-                "\"firstname\":\"test\"," +
-                "\"lastname\":\"user\"," +
-                "\"email\":\"test_user@email.com\"," +
-                "\"username\":\"test.user\""));
+        result.andExpect(jsonPath("$.user.firstname", is("test")));
+        result.andExpect(jsonPath("$.user.lastname", is("user")));
+        result.andExpect(jsonPath("$.user.email", is("test_user@email.com")));
+        result.andExpect(jsonPath("$.user.username", is("test.user")));
     }
 
     @Test
@@ -197,12 +193,10 @@ public class UserControllerIntegrationTest {
 
         //then
         result.andExpect(status().isOk());
-        String content = result.andReturn().getResponse().getContentAsString();
-        assertTrue(content.contains(
-                "\"firstname\":\"user\"," +
-                "\"lastname\":\"test\"," +
-                "\"email\":\"test_user@email.com\"," +
-                "\"username\":\"user.test\""));
+        result.andExpect(jsonPath("$.user.firstname", is("user")));
+        result.andExpect(jsonPath("$.user.lastname", is("test")));
+        result.andExpect(jsonPath("$.user.email", is("test_user@email.com")));
+        result.andExpect(jsonPath("$.user.username", is("user.test")));
     }
 
     @Test

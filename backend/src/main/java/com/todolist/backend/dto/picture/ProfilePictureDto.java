@@ -14,5 +14,4 @@ public class ProfilePictureDto {
     @NotBlank(message = "The Url is required.")
     @Size(max = 255, message = "The length of the Image URL cannot exceed 255 characters")
     private String url;
-
 }

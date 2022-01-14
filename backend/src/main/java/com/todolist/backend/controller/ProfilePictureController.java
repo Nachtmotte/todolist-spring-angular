@@ -54,4 +54,28 @@ public class ProfilePictureController {
         bodyResponse.put("profilePicture", profilePictureDto);
         return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
     }
+
+    @DeleteMapping("/{userId}/profile-picture")
+    public ResponseEntity<Map<String, Object>> addProfilePicture(
+            Principal principal,
+            @PathVariable("userId") Integer userId) {
+
+        Map<String, Object> bodyResponse = new HashMap<>();
+
+        int sessionId = Integer.parseInt(principal.getName());
+        if (sessionId != userId) {
+            bodyResponse.put("errorMessage", "Login to delete profile picture to user");
+            return new ResponseEntity<>(bodyResponse, HttpStatus.FORBIDDEN);
+        }
+
+        User currentUser = userService.getById(userId);
+        if (currentUser.getProfilePicture() == null){
+            bodyResponse.put("errorMessage", "The user don't have a profile picture");
+            return new ResponseEntity<>(bodyResponse, HttpStatus.CONFLICT);
+        }
+
+        profilePictureService.delete(currentUser.getProfilePicture().getId());
+
+        return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
+    }
 }

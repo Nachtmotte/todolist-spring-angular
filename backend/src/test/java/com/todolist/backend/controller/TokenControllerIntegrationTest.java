@@ -80,6 +80,7 @@ public class TokenControllerIntegrationTest {
 
         //when
         ResultActions result = mockMvc.perform(get("/token/refresh")
+                .servletPath("/token/refresh")
                 .header("Authorization", "Bearer " + refreshToken));
 
         //then
@@ -92,10 +93,11 @@ public class TokenControllerIntegrationTest {
     public void givenInvalidRefreshToken_whenGetRequest_thenShouldResponseForbidden() throws Exception {
 
         //given
-        String refreshToken = generateRefreshToken().replace('.','_');
+        String refreshToken = generateRefreshToken().replace('.', '_');
 
         //when
         ResultActions result = mockMvc.perform(get("/token/refresh")
+                .servletPath("/token/refresh")
                 .header("Authorization", "Bearer " + refreshToken));
 
         //then
@@ -106,7 +108,7 @@ public class TokenControllerIntegrationTest {
     public void whenGetRequestWithoutRefreshToken_thenShouldResponseForbidden() throws Exception {
 
         //when
-        ResultActions result = mockMvc.perform(get("/token/refresh"));
+        ResultActions result = mockMvc.perform(get("/token/refresh").servletPath("/token/refresh"));
 
         //then
         result.andExpect(status().isForbidden());

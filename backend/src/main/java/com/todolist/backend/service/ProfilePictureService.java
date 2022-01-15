@@ -17,7 +17,7 @@ public class ProfilePictureService {
         return profilePictureRepo.save(profilePicture);
     }
 
-    public void delete(int profilePictureId){
-        profilePictureRepo.deleteById(profilePictureId);
+    public void delete(ProfilePicture profilePicture){
+        profilePictureRepo.delete(profilePicture);
     }
 }

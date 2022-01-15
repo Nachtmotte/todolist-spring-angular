@@ -8,6 +8,6 @@ import javax.validation.constraints.*;
 public class TodoListDto {
 
     @NotBlank(message = "The Name of the TodoList is required.")
-    @Size(max = 45, message = "The length of the Name cannot exceed 45 characters")
+    @Size(min = 1, max = 45, message = "The length of the Name cannot exceed 45 characters")
     private String name;
 }

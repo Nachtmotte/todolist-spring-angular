@@ -1,7 +1,8 @@
 package com.todolist.backend.entity;
 
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 
@@ -21,7 +22,7 @@ public class Item {
 
     private boolean state;
 
-    @CreatedDate
+    @CreationTimestamp
     @Column(updatable = false)
     private Timestamp created;
 

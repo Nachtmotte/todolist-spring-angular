@@ -1,12 +1,13 @@
 package com.todolist.backend.controller;
 
-import com.todolist.backend.controller.util.ModelMapperService;
 import com.todolist.backend.dto.role.RoleGetDto;
 import com.todolist.backend.dto.user.PageUserDto;
 import com.todolist.backend.dto.user.UserGetWithRolesDto;
 import com.todolist.backend.entity.*;
 import com.todolist.backend.service.*;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,7 +36,7 @@ public class AdminController {
 
     private final UserService userService;
 
-    private final ModelMapperService mapperService;
+    private final ModelMapper mapper;
 
     @PostMapping("users/{userId}/roles/{roleId}")
     public ResponseEntity<Map<String, Object>> addRoleToUser(
@@ -61,7 +62,7 @@ public class AdminController {
         }
 
         user = roleService.addRoleToUser(user, role);
-        UserGetWithRolesDto userGetDto = mapperService.mapUserEntityToUserGetWithRolesDto(user);
+        UserGetWithRolesDto userGetDto = mapper.map(user, UserGetWithRolesDto.class);
 
         bodyResponse.put("user", userGetDto);
 
@@ -87,7 +88,7 @@ public class AdminController {
         }
 
         user = roleService.removeRoleFromUser(user, roleId);
-        UserGetWithRolesDto userGetDto = mapperService.mapUserEntityToUserGetWithRolesDto(user);
+        UserGetWithRolesDto userGetDto = mapper.map(user, UserGetWithRolesDto.class);
 
         bodyResponse.put("user", userGetDto);
 
@@ -107,10 +108,10 @@ public class AdminController {
         Map<String, Object> bodyResponse = new HashMap<>();
         Pageable pageable = PageRequest
                 .of(pageNumber,
-                users_per_page,
-                Sort.by(direction.equals("desc") ? DESC : ASC, order));
+                        users_per_page,
+                        Sort.by(direction.equals("desc") ? DESC : ASC, order));
         Page<User> users = userService.getAll(pageable);
-        PageUserDto pageUserDto = mapperService.mapUsersPageToUsersPageDto(users);
+        PageUserDto pageUserDto = mapper.map(users, PageUserDto.class);
 
         bodyResponse.put("users", pageUserDto);
         return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
@@ -121,7 +122,8 @@ public class AdminController {
         Map<String, Object> bodyResponse = new HashMap<>();
 
         List<Role> roles = roleService.getAll();
-        List<RoleGetDto> rolesDto = mapperService.mapRoleEntitiesToRoleDtos(roles);
+        List<RoleGetDto> rolesDto = mapper.map(roles, new TypeToken<List<RoleGetDto>>() {
+        }.getType());
 
         bodyResponse.put("roles", rolesDto);
         return new ResponseEntity<>(bodyResponse, HttpStatus.OK);

@@ -19,7 +19,7 @@ public class RoleService {
         return roleRepo.findAll();
     }
 
-    public Role getById(Integer id){
+    public Role getById(int id){
         return roleRepo.findById(id).orElse(null);
     }
 

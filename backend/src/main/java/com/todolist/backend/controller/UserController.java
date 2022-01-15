@@ -1,10 +1,10 @@
 package com.todolist.backend.controller;
 
-import com.todolist.backend.controller.util.ModelMapperService;
 import com.todolist.backend.dto.user.*;
 import com.todolist.backend.entity.User;
 import com.todolist.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.*;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +22,7 @@ public class UserController {
 
     private final UserService userService;
 
-    private final ModelMapperService mapperService;
+    private final ModelMapper mapper;
 
     @PostMapping()
     public ResponseEntity<Map<String, Object>> createUser(@Valid @RequestBody UserPostDto requestUser) {
@@ -33,9 +33,9 @@ public class UserController {
             return new ResponseEntity<>(bodyResponse, HttpStatus.CONFLICT);
         }
 
-        User user = mapperService.mapUserPostDtoToUserEntity(requestUser);
+        User user = mapper.map(requestUser, User.class);
         user = userService.save(user);
-        UserGetDto userGetDto = mapperService.mapUserEntityToUserGetDto(user);
+        UserGetDto userGetDto = mapper.map(user, UserGetDto.class);
 
         bodyResponse.put("user", userGetDto);
         return new ResponseEntity<>(bodyResponse, HttpStatus.CREATED);
@@ -53,7 +53,7 @@ public class UserController {
         }
 
         User user = userService.getById(userId);
-        UserGetDto userDto = mapperService.mapUserEntityToUserGetDto(user);
+        UserGetDto userDto = mapper.map(user, UserGetDto.class);
 
         bodyResponse.put("user", userDto);
         return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
@@ -91,7 +91,7 @@ public class UserController {
                 requestUserDto.getLastname(),
                 requestUserDto.getUsername(),
                 requestUserDto.getPassword());
-        UserGetDto userGetDto = mapperService.mapUserEntityToUserGetDto(user);
+        UserGetDto userGetDto = mapper.map(user, UserGetDto.class);
 
         bodyResponse.put("user", userGetDto);
         return new ResponseEntity<>(bodyResponse, HttpStatus.OK);

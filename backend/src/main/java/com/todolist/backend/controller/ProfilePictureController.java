@@ -1,10 +1,10 @@
 package com.todolist.backend.controller;
 
-import com.todolist.backend.controller.util.ModelMapperService;
 import com.todolist.backend.dto.picture.ProfilePictureDto;
 import com.todolist.backend.entity.*;
 import com.todolist.backend.service.*;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.*;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -18,16 +18,16 @@ import static com.todolist.backend.entity.Roles.Constants.*;
 @RestController
 @RequiredArgsConstructor
 @Secured({ROLE_ADMIN, ROLE_USER})
-@RequestMapping(path = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/users/{userId}/profile-picture", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProfilePictureController {
 
     private final UserService userService;
 
     private final ProfilePictureService profilePictureService;
 
-    private final ModelMapperService mapperService;
+    private final ModelMapper mapper;
 
-    @PostMapping("/{userId}/profile-picture")
+    @PostMapping()
     public ResponseEntity<Map<String, Object>> addProfilePicture(
             Principal principal,
             @PathVariable("userId") Integer userId,
@@ -47,15 +47,15 @@ public class ProfilePictureController {
             return new ResponseEntity<>(bodyResponse, HttpStatus.CONFLICT);
         }
 
-        ProfilePicture profilePicture = mapperService.mapProfilePictureDtoToProfilePictureEntity(requestPicture);
+        ProfilePicture profilePicture = mapper.map(requestPicture, ProfilePicture.class);
         profilePicture = profilePictureService.save(currentUser, profilePicture);
-        ProfilePictureDto profilePictureDto = mapperService.mapProfilePictureEntityToProfilePictureDto(profilePicture);
+        ProfilePictureDto profilePictureDto = mapper.map(profilePicture, ProfilePictureDto.class);
 
         bodyResponse.put("profilePicture", profilePictureDto);
         return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{userId}/profile-picture")
+    @DeleteMapping()
     public ResponseEntity<Map<String, Object>> addProfilePicture(
             Principal principal,
             @PathVariable("userId") Integer userId) {
@@ -74,7 +74,7 @@ public class ProfilePictureController {
             return new ResponseEntity<>(bodyResponse, HttpStatus.CONFLICT);
         }
 
-        profilePictureService.delete(currentUser.getProfilePicture().getId());
+        profilePictureService.delete(currentUser.getProfilePicture());
 
         return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
     }

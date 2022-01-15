@@ -43,7 +43,7 @@ public class UserService implements UserDetailsService {
         return userRepo.save(user);
     }
 
-    public User getById(Integer userId) {
+    public User getById(int userId) {
         return userRepo.findById(userId).orElse(null);
     }
 
@@ -80,7 +80,7 @@ public class UserService implements UserDetailsService {
         return users.isEmpty();
     }
 
-    public boolean isUniqueDataForUpdate(Integer userId, String username) {
+    public boolean isUniqueDataForUpdate(int userId, String username) {
         User user = userRepo.findByUsername(username);
         return user == null || user.getId() == userId;
     }

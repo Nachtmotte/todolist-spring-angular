@@ -1,7 +1,8 @@
 package com.todolist.backend.entity;
 
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.List;
@@ -18,10 +19,10 @@ public class TodoList {
     @GeneratedValue
     private int id;
 
-    @Column(name = "name", unique=true)
+    @Column(name = "name", unique = true)
     private String name;
 
-    @CreatedDate
+    @CreationTimestamp
     @Column(updatable = false)
     private Timestamp created;
 

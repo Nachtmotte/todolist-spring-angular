@@ -47,7 +47,7 @@ public class TodoListController {
         User currentUser = new User();
         currentUser.setId(userId);
         TodoList list = mapper.map(requestList, TodoList.class);
-        list = todoListService.save(currentUser, list);
+        list = todoListService.save(list, currentUser);
         TodoListGetDto todoListGetDto = mapper.map(list, TodoListGetDto.class);
 
         return ResponseEntityUtil.generateResponse(HttpStatus.CREATED, "list", todoListGetDto);

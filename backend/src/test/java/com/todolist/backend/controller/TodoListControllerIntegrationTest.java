@@ -75,7 +75,7 @@ public class TodoListControllerIntegrationTest {
 
         testList = new TodoList();
         testList.setName("list1");
-        testList = todoListService.save(testUser, testList);
+        testList = todoListService.save(testList, testUser);
     }
 
     @After

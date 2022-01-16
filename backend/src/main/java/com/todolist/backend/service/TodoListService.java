@@ -14,7 +14,7 @@ public class TodoListService {
 
     private final TodoListRepository todoListRepo;
 
-    public TodoList save(User user, TodoList todoList) {
+    public TodoList save(TodoList todoList, User user) {
         todoList.setUser(user);
         return todoListRepo.save(todoList);
     }

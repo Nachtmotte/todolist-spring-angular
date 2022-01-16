@@ -24,24 +24,30 @@ public class TokenController {
 
     @GetMapping("/refresh")
     public ResponseEntity<Map<String, Object>> refreshToken(HttpServletRequest request) {
+
         Map<String, Object> bodyResponse = new HashMap<>();
+
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             try {
                 String refreshToken = authorizationHeader.substring("Bearer ".length());
                 DecodedJWT decodedJWT = jwtService.decodeJwt(refreshToken);
                 String userId = decodedJWT.getSubject();
                 User user = userService.getById(Integer.parseInt(userId));
-                String newAccessToken = jwtService.createAccessToken(userId, user.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
+
+                String newAccessToken = jwtService.createAccessToken(userId, user.getRoles()
+                        .stream().map(Role::getName).collect(Collectors.toList()));
                 String newRefreshToken = jwtService.createRefreshToken(userId);
+
                 bodyResponse.put("accessToken", newAccessToken);
                 bodyResponse.put("refreshToken", newRefreshToken);
                 return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
-            }catch (Exception e){
+
+            } catch (Exception e) {
                 bodyResponse.put("errorMessage", e.getMessage());
                 return new ResponseEntity<>(bodyResponse, HttpStatus.FORBIDDEN);
             }
-        }else{
+        } else {
             bodyResponse.put("errorMessage", "Refresh token is missing");
             return new ResponseEntity<>(bodyResponse, HttpStatus.FORBIDDEN);
         }

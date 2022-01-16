@@ -1,5 +1,6 @@
 package com.todolist.backend.controller;
 
+import com.todolist.backend.controller.util.ResponseEntityUtil;
 import com.todolist.backend.dto.todolist.TodoListDto;
 import com.todolist.backend.dto.todolist.TodoListGetDto;
 import com.todolist.backend.entity.TodoList;
@@ -7,6 +8,7 @@ import com.todolist.backend.entity.User;
 import com.todolist.backend.service.TodoListService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.todolist.backend.entity.Roles.Constants.ROLE_USER;
@@ -36,12 +38,10 @@ public class TodoListController {
             @PathVariable("userId") Integer userId,
             @Valid @RequestBody TodoListDto requestList) {
 
-        Map<String, Object> bodyResponse = new HashMap<>();
-
         int sessionId = Integer.parseInt(principal.getName());
         if (sessionId != userId) {
-            bodyResponse.put("errorMessage", "Login to add profile picture to user");
-            return new ResponseEntity<>(bodyResponse, HttpStatus.FORBIDDEN);
+            return ResponseEntityUtil.generateResponse(HttpStatus.FORBIDDEN,
+                    "errorMessage", "Login to create list");
         }
 
         User currentUser = new User();
@@ -50,7 +50,71 @@ public class TodoListController {
         list = todoListService.save(currentUser, list);
         TodoListGetDto todoListGetDto = mapper.map(list, TodoListGetDto.class);
 
-        bodyResponse.put("list", todoListGetDto);
-        return new ResponseEntity<>(bodyResponse, HttpStatus.CREATED);
+        return ResponseEntityUtil.generateResponse(HttpStatus.CREATED, "list", todoListGetDto);
+    }
+
+    @GetMapping()
+    public ResponseEntity<Map<String, Object>> getAllLists(Principal principal, @PathVariable("userId") Integer userId) {
+
+        int sessionId = Integer.parseInt(principal.getName());
+        if (sessionId != userId) {
+            return ResponseEntityUtil.generateResponse(HttpStatus.FORBIDDEN,
+                    "errorMessage", "Login to get lists");
+        }
+
+        List<TodoList> lists = todoListService.getAllByUserId(userId);
+        List<TodoListGetDto> listsDto = mapper.map(lists, new TypeToken<List<TodoListGetDto>>() {
+        }.getType());
+
+        return ResponseEntityUtil.generateResponse(HttpStatus.OK, "lists", listsDto);
+    }
+
+    @PutMapping("/{listId}")
+    public ResponseEntity<Map<String, Object>> updateList(
+            Principal principal,
+            @PathVariable("userId") Integer userId,
+            @PathVariable("listId") Integer listId,
+            @Valid @RequestBody TodoListDto requestList) {
+
+        int sessionId = Integer.parseInt(principal.getName());
+        if (sessionId != userId) {
+            return ResponseEntityUtil.generateResponse(HttpStatus.FORBIDDEN,
+                    "errorMessage", "Login to update list");
+        }
+
+        TodoList currentList = todoListService.getByIdAndUserId(listId, userId);
+        if(currentList == null){
+            return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND,
+                    "errorMessage", "The list does not exist");
+        }
+
+        currentList.setName(requestList.getName());
+        currentList = todoListService.update(currentList);
+        TodoListGetDto todoListGetDto = mapper.map(currentList, TodoListGetDto.class);
+
+        return ResponseEntityUtil.generateResponse(HttpStatus.OK, "list", todoListGetDto);
+    }
+
+    @DeleteMapping("/{listId}")
+    public ResponseEntity<Map<String, Object>> updateList(
+            Principal principal,
+            @PathVariable("userId") Integer userId,
+            @PathVariable("listId") Integer listId) {
+
+        int sessionId = Integer.parseInt(principal.getName());
+        if (sessionId != userId) {
+            return ResponseEntityUtil.generateResponse(HttpStatus.FORBIDDEN,
+                    "errorMessage", "Login to delete list");
+        }
+
+        TodoList currentList = todoListService.getByIdAndUserId(listId, userId);
+        if(currentList == null){
+            return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND,
+                    "errorMessage", "The list does not exist");
+        }
+
+        todoListService.delete(currentList);
+
+        return ResponseEntityUtil.generateResponse(HttpStatus.OK, null, null);
     }
 }

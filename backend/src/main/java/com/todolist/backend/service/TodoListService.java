@@ -19,12 +19,12 @@ public class TodoListService {
         return todoListRepo.save(todoList);
     }
 
-    public TodoList getById(int todoListId) {
-        return todoListRepo.getById(todoListId);
+    public TodoList getByIdAndUserId(int todoListId, int userId){
+        return todoListRepo.findByIdAndUserId(todoListId, userId);
     }
 
-    public List<TodoList> getAll() {
-        return todoListRepo.findAll();
+    public List<TodoList> getAllByUserId(int userId) {
+        return todoListRepo.findAllByUserId(userId);
     }
 
     public TodoList update(TodoList todoList){
@@ -34,4 +34,6 @@ public class TodoListService {
     public void delete(TodoList todoList){
         todoListRepo.delete(todoList);
     }
+
+    public void deleteAll(){ todoListRepo.deleteAll(); }
 }

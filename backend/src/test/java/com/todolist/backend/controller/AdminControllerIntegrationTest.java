@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -250,6 +251,7 @@ public class AdminControllerIntegrationTest {
 
         //then
         result.andExpect(status().isOk());
+        result.andDo(MockMvcResultHandlers.print());
         result.andExpect(jsonPath("$.users.content", hasSize(2)));
     }
 

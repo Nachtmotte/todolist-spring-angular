@@ -1,5 +1,6 @@
 package com.todolist.backend.controller;
 
+import com.todolist.backend.controller.util.ResponseEntityUtil;
 import com.todolist.backend.dto.role.RoleGetDto;
 import com.todolist.backend.dto.user.PageUserDto;
 import com.todolist.backend.dto.user.UserGetWithRolesDto;
@@ -42,31 +43,28 @@ public class AdminController {
     public ResponseEntity<Map<String, Object>> addRoleToUser(
             @PathVariable("userId") Integer userId,
             @PathVariable("roleId") Integer roleId) {
-        Map<String, Object> bodyResponse = new HashMap<>();
 
         User user = userService.getById(userId);
         if (user == null) {
-            bodyResponse.put("errorMessage", "The user does not exist");
-            return new ResponseEntity<>(bodyResponse, HttpStatus.NOT_FOUND);
+            return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND,
+                    "errorMessage", "The user does not exist");
         }
 
         Role role = roleService.getById(roleId);
         if (role == null) {
-            bodyResponse.put("errorMessage", "The role does not exist");
-            return new ResponseEntity<>(bodyResponse, HttpStatus.NOT_FOUND);
+            return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND,
+                    "errorMessage", "The role does not exist");
         }
 
         if (user.getRoles().stream().anyMatch(r -> r.getId() == role.getId())) {
-            bodyResponse.put("errorMessage", "The user already has that role");
-            return new ResponseEntity<>(bodyResponse, HttpStatus.CONFLICT);
+            return ResponseEntityUtil.generateResponse(HttpStatus.CONFLICT,
+                    "errorMessage", "The user already has that role");
         }
 
         user = roleService.addRoleToUser(user, role);
         UserGetWithRolesDto userGetDto = mapper.map(user, UserGetWithRolesDto.class);
 
-        bodyResponse.put("user", userGetDto);
-
-        return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
+        return ResponseEntityUtil.generateResponse(HttpStatus.OK, "user", userGetDto);
     }
 
     @DeleteMapping("users/{userId}/roles/{roleId}")
@@ -74,25 +72,21 @@ public class AdminController {
             @PathVariable("userId") Integer userId,
             @PathVariable("roleId") Integer roleId) {
 
-        Map<String, Object> bodyResponse = new HashMap<>();
-
         User user = userService.getById(userId);
         if (user == null) {
-            bodyResponse.put("errorMessage", "The user does not exist");
-            return new ResponseEntity<>(bodyResponse, HttpStatus.NOT_FOUND);
+            return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND,
+                    "errorMessage", "The user does not exist");
         }
 
         if (user.getRoles().stream().noneMatch(r -> r.getId() == roleId)) {
-            bodyResponse.put("errorMessage", "The user no longer has that role.");
-            return new ResponseEntity<>(bodyResponse, HttpStatus.CONFLICT);
+            return ResponseEntityUtil.generateResponse(HttpStatus.CONFLICT,
+                    "errorMessage", "The user no longer has that role.");
         }
 
         user = roleService.removeRoleFromUser(user, roleId);
         UserGetWithRolesDto userGetDto = mapper.map(user, UserGetWithRolesDto.class);
 
-        bodyResponse.put("user", userGetDto);
-
-        return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
+        return ResponseEntityUtil.generateResponse(HttpStatus.OK, "user", userGetDto);
     }
 
     @GetMapping("/users")
@@ -105,7 +99,6 @@ public class AdminController {
         order = order == null ? "id" : order;
         direction = direction == null ? "asc" : direction;
 
-        Map<String, Object> bodyResponse = new HashMap<>();
         Pageable pageable = PageRequest
                 .of(pageNumber,
                         users_per_page,
@@ -113,19 +106,15 @@ public class AdminController {
         Page<User> users = userService.getAll(pageable);
         PageUserDto pageUserDto = mapper.map(users, PageUserDto.class);
 
-        bodyResponse.put("users", pageUserDto);
-        return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
+        return ResponseEntityUtil.generateResponse(HttpStatus.OK, "users", pageUserDto);
     }
 
     @GetMapping("/roles")
     public ResponseEntity<Map<String, Object>> getRoles() {
-        Map<String, Object> bodyResponse = new HashMap<>();
-
         List<Role> roles = roleService.getAll();
         List<RoleGetDto> rolesDto = mapper.map(roles, new TypeToken<List<RoleGetDto>>() {
         }.getType());
 
-        bodyResponse.put("roles", rolesDto);
-        return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
+        return ResponseEntityUtil.generateResponse(HttpStatus.OK, "roles", rolesDto);
     }
 }

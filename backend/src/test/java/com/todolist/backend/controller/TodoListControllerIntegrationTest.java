@@ -1,10 +1,11 @@
 package com.todolist.backend.controller;
 
 import com.todolist.backend.entity.Role;
+import com.todolist.backend.entity.TodoList;
 import com.todolist.backend.entity.User;
 import com.todolist.backend.repository.RoleRepository;
-import com.todolist.backend.repository.TodoListRepository;
 import com.todolist.backend.security.util.JwtService;
+import com.todolist.backend.service.TodoListService;
 import com.todolist.backend.service.UserService;
 import org.junit.After;
 import org.junit.Before;
@@ -20,13 +21,13 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.stream.Collectors;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static com.todolist.backend.entity.Roles.Constants.ROLE_USER;
+import static org.junit.Assert.assertNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -39,7 +40,7 @@ public class TodoListControllerIntegrationTest {
     RoleRepository roleRepo;
 
     @Autowired
-    TodoListRepository todoListRepo;
+    TodoListService todoListService;
 
     @Autowired
     UserService userService;
@@ -53,6 +54,8 @@ public class TodoListControllerIntegrationTest {
     private MockMvc mockMvc;
 
     private User testUser;
+
+    private TodoList testList;
 
     @Before
     public void setup() {
@@ -69,11 +72,15 @@ public class TodoListControllerIntegrationTest {
         testUser.setUsername("test.user");
         testUser.setPassword("TestUser2022");
         testUser = userService.save(testUser);
+
+        testList = new TodoList();
+        testList.setName("list1");
+        testList = todoListService.save(testUser, testList);
     }
 
     @After
     public void tearDown() {
-        todoListRepo.deleteAll();
+        todoListService.deleteAll();
         userService.deleteAll();
         roleRepo.deleteAll();
     }
@@ -97,6 +104,226 @@ public class TodoListControllerIntegrationTest {
         //then
         result.andExpect(status().isCreated());
         result.andExpect(jsonPath("$.list.name", is("todolist")));
+    }
+
+    @Test
+    public void givenValidTodoListDataAndInvalidUserIdWithToken_whenPostRequest_thenShouldResponseForbidden() throws Exception {
+
+        //given
+        String userId = Integer.toString(testUser.getId() + 1);
+        String todoListData = "{\"name\": \"todolist\"}";
+
+        //when
+        ResultActions result = mockMvc.perform(post("/users/" + userId + "/lists")
+                .header("Authorization", "Bearer " + generateToken())
+                .content(todoListData)
+                .contentType(APPLICATION_JSON_VALUE));
+
+        //then
+        result.andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void givenValidTodoListDataAndValidUserIdWithoutToken_whenPostRequest_thenShouldResponseForbidden() throws Exception {
+
+        //given
+        String userId = Integer.toString(testUser.getId());
+        String todoListData = "{\"name\": \"todolist\"}";
+
+        //when
+        ResultActions result = mockMvc.perform(post("/users/" + userId + "/lists")
+                .content(todoListData)
+                .contentType(APPLICATION_JSON_VALUE));
+
+        //then
+        result.andExpect(status().isForbidden());
+    }
+
+    // -----------------------------------------------------
+    //             -- Test for GET ALL LISTS
+    // -----------------------------------------------------
+    @Test
+    public void givenValidUserIdWithToken_whenGetRequest_thenShouldResponseOk() throws Exception {
+
+        //given
+        String userId = Integer.toString(testUser.getId());
+
+        //when
+        ResultActions result = mockMvc.perform(get("/users/" + userId + "/lists")
+                .header("Authorization", "Bearer " + generateToken()));
+
+        //then
+        result.andExpect(status().isOk());
+        result.andExpect(jsonPath("$.lists", hasSize(1)));
+    }
+
+    @Test
+    public void givenInvalidUserIdWithToken_whenGetRequest_thenShouldResponseForbidden() throws Exception {
+
+        //given
+        String userId = Integer.toString(testUser.getId() + 1);
+
+        //when
+        ResultActions result = mockMvc.perform(get("/users/" + userId + "/lists")
+                .header("Authorization", "Bearer " + generateToken()));
+
+        //then
+        result.andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void givenValidUserIdWithoutToken_whenGetRequest_thenShouldResponseOk() throws Exception {
+
+        //given
+        String userId = Integer.toString(testUser.getId());
+
+        //when
+        ResultActions result = mockMvc.perform(get("/users/" + userId + "/lists"));
+
+        //then
+        result.andExpect(status().isForbidden());
+    }
+
+    // -----------------------------------------------------
+    //             -- Test for UPDATE LIST
+    // -----------------------------------------------------
+    @Test
+    public void givenValidUserIdAndValidListIdWithToken_whenPutRequest_thenShouldResponseOk() throws Exception {
+
+        //given
+        String userId = Integer.toString(testUser.getId());
+        String listId = Integer.toString(testList.getId());
+        String listNewName = "updateList";
+        String listNewData = "{ \"name\": \"" + listNewName + "\" }";
+
+        //when
+        ResultActions result = mockMvc.perform(put("/users/" + userId + "/lists/" + listId)
+                .header("Authorization", "Bearer " + generateToken())
+                .content(listNewData)
+                .contentType(APPLICATION_JSON_VALUE));
+
+        //then
+        result.andExpect(status().isOk());
+        result.andExpect(jsonPath("$.list.name", is(listNewName)));
+    }
+
+    @Test
+    public void givenInvalidUserIdAndValidListIdWithToken_whenPutRequest_thenShouldResponseForbidden() throws Exception {
+
+        //given
+        String userId = Integer.toString(testUser.getId() + 1);
+        String listId = Integer.toString(testList.getId());
+        String listNewName = "updateList";
+        String listNewData = "{ \"name\": \"" + listNewName + "\" }";
+
+        //when
+        ResultActions result = mockMvc.perform(put("/users/" + userId + "/lists/" + listId)
+                .header("Authorization", "Bearer " + generateToken())
+                .content(listNewData)
+                .contentType(APPLICATION_JSON_VALUE));
+
+        //then
+        result.andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void givenValidUserIdAndInvalidListIdWithToken_whenPutRequest_thenShouldResponseNotFound() throws Exception {
+
+        //given
+        String userId = Integer.toString(testUser.getId());
+        String listId = Integer.toString(testList.getId() + 1);
+        String listNewName = "updateList";
+        String listNewData = "{ \"name\": \"" + listNewName + "\" }";
+
+        //when
+        ResultActions result = mockMvc.perform(put("/users/" + userId + "/lists/" + listId)
+                .header("Authorization", "Bearer " + generateToken())
+                .content(listNewData)
+                .contentType(APPLICATION_JSON_VALUE));
+
+        //then
+        result.andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void givenValidUserIdAndValidListIdWithoutToken_whenPutRequest_thenShouldResponseForbidden() throws Exception {
+
+        //given
+        String userId = Integer.toString(testUser.getId());
+        String listId = Integer.toString(testList.getId());
+        String listNewName = "updateList";
+        String listNewData = "{ \"name\": \"" + listNewName + "\" }";
+
+        //when
+        ResultActions result = mockMvc.perform(put("/users/" + userId + "/lists/" + listId)
+                .content(listNewData)
+                .contentType(APPLICATION_JSON_VALUE));
+
+        //then
+        result.andExpect(status().isForbidden());
+    }
+
+    // -----------------------------------------------------
+    //             -- Test for DELETE LIST
+    // -----------------------------------------------------
+    @Test
+    public void givenValidUserIdAndValidListIdWithToken_whenDeleteRequest_thenShouldResponseOk() throws Exception {
+
+        //given
+        String userId = Integer.toString(testUser.getId());
+        String listId = Integer.toString(testList.getId());
+
+        //when
+        ResultActions result = mockMvc.perform(delete("/users/" + userId + "/lists/" + listId)
+                .header("Authorization", "Bearer " + generateToken()));
+
+        //then
+        result.andExpect(status().isOk());
+        assertNull(todoListService.getByIdAndUserId(testList.getId(), testUser.getId()));
+    }
+
+    @Test
+    public void givenInvalidUserIdAndValidListIdWithToken_whenDeleteRequest_thenShouldResponseForbidden() throws Exception {
+
+        //given
+        String userId = Integer.toString(testUser.getId() + 1);
+        String listId = Integer.toString(testList.getId());
+
+        //when
+        ResultActions result = mockMvc.perform(delete("/users/" + userId + "/lists/" + listId)
+                .header("Authorization", "Bearer " + generateToken()));
+
+        //then
+        result.andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void givenValidUserIdAndInvalidListIdWithToken_whenDeleteRequest_thenShouldResponseNotFound() throws Exception {
+
+        //given
+        String userId = Integer.toString(testUser.getId());
+        String listId = Integer.toString(testList.getId() + 1);
+
+        //when
+        ResultActions result = mockMvc.perform(delete("/users/" + userId + "/lists/" + listId)
+                .header("Authorization", "Bearer " + generateToken()));
+
+        //then
+        result.andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void givenValidUserIdAndValidListIdWithoutToken_whenDeleteRequest_thenShouldResponseForbidden() throws Exception {
+
+        //given
+        String userId = Integer.toString(testUser.getId());
+        String listId = Integer.toString(testList.getId());
+
+        //when
+        ResultActions result = mockMvc.perform(delete("/users/" + userId + "/lists/" + listId));
+
+        //then
+        result.andExpect(status().isForbidden());
     }
 
     // -----------------------------------------------------

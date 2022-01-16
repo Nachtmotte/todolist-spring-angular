@@ -1,5 +1,6 @@
 package com.todolist.backend.controller;
 
+import com.todolist.backend.controller.util.ResponseEntityUtil;
 import com.todolist.backend.dto.picture.ProfilePictureDto;
 import com.todolist.backend.entity.*;
 import com.todolist.backend.service.*;
@@ -33,26 +34,23 @@ public class ProfilePictureController {
             @PathVariable("userId") Integer userId,
             @Valid @RequestBody ProfilePictureDto requestPicture) {
 
-        Map<String, Object> bodyResponse = new HashMap<>();
-
         int sessionId = Integer.parseInt(principal.getName());
         if (sessionId != userId) {
-            bodyResponse.put("errorMessage", "Login to add profile picture to user");
-            return new ResponseEntity<>(bodyResponse, HttpStatus.FORBIDDEN);
+            return ResponseEntityUtil.generateResponse(HttpStatus.FORBIDDEN,
+                    "errorMessage", "Login to add profile picture to user");
         }
 
         User currentUser = userService.getById(userId);
         if (currentUser.getProfilePicture() != null){
-            bodyResponse.put("errorMessage", "The user already have a profile picture");
-            return new ResponseEntity<>(bodyResponse, HttpStatus.CONFLICT);
+            return ResponseEntityUtil.generateResponse(HttpStatus.CONFLICT,
+                    "errorMessage", "The user already have a profile picture");
         }
 
         ProfilePicture profilePicture = mapper.map(requestPicture, ProfilePicture.class);
         profilePicture = profilePictureService.save(currentUser, profilePicture);
         ProfilePictureDto profilePictureDto = mapper.map(profilePicture, ProfilePictureDto.class);
 
-        bodyResponse.put("profilePicture", profilePictureDto);
-        return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
+        return ResponseEntityUtil.generateResponse(HttpStatus.OK, "profilePicture", profilePictureDto);
     }
 
     @DeleteMapping()
@@ -60,22 +58,20 @@ public class ProfilePictureController {
             Principal principal,
             @PathVariable("userId") Integer userId) {
 
-        Map<String, Object> bodyResponse = new HashMap<>();
-
         int sessionId = Integer.parseInt(principal.getName());
         if (sessionId != userId) {
-            bodyResponse.put("errorMessage", "Login to delete profile picture to user");
-            return new ResponseEntity<>(bodyResponse, HttpStatus.FORBIDDEN);
+            return ResponseEntityUtil.generateResponse(HttpStatus.FORBIDDEN,
+                    "errorMessage", "Login to delete profile picture to user");
         }
 
         User currentUser = userService.getById(userId);
         if (currentUser.getProfilePicture() == null){
-            bodyResponse.put("errorMessage", "The user don't have a profile picture");
-            return new ResponseEntity<>(bodyResponse, HttpStatus.CONFLICT);
+            return ResponseEntityUtil.generateResponse(HttpStatus.CONFLICT,
+                    "errorMessage", "The user don't have a profile picture");
         }
 
         profilePictureService.delete(currentUser.getProfilePicture());
 
-        return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
+        return ResponseEntityUtil.generateResponse(HttpStatus.OK, null, null);
     }
 }

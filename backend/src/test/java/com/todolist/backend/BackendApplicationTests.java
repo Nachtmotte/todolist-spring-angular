@@ -10,7 +10,8 @@ import org.junit.runners.Suite;
 		AdminControllerIntegrationTest.class,
 		TokenControllerIntegrationTest.class,
 		ProfilePictureControllerIntegrationTest.class,
-		TodoListControllerIntegrationTest.class
+		TodoListControllerIntegrationTest.class,
+		ItemControllerIntegrationTest.class
 })
 public class BackendApplicationTests {
 

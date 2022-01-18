@@ -22,17 +22,31 @@ public class ItemService {
         return itemRepo.save(item);
     }
 
+    public Item getByIdAndListIdAndUserId(int id, int listId, int userId){
+        return itemRepo.findByIdAndTodoListIdAndTodoList_UserId(id, listId, userId);
+    }
+
     public Page<Item> getAllItemsUnChecked(int todoListId, int userId, Pageable pageable) {
-        return itemRepo.findAllUnchecked(todoListId, /*Timestamp.from(Instant.now()), userId,*/ pageable);
+        return itemRepo.findByTodoListIdAndStateAndExpiredIsNullOrExpiredAfterAndTodoList_UserId(
+                todoListId, false, Timestamp.from(Instant.now()), userId, pageable);
     }
 
     public Page<Item> getAllItemsExpired(int todoListId, int userId, Pageable pageable){
-        return itemRepo.findAllByTodoListIdAndStateFalseAndExpiredBeforeAndTodoList_UserId(
-                todoListId, Timestamp.from(Instant.now()), userId, pageable);
+        return itemRepo.findByTodoListIdAndStateAndExpiredBeforeAndTodoList_UserId(
+                todoListId, false, Timestamp.from(Instant.now()), userId, pageable);
     }
 
     public Page<Item> getAllItemsChecked(int todoListId, int userId, Pageable pageable){
-        return itemRepo.findAllByTodoListIdAndStateTrueAndTodoList_UserId(todoListId, userId, pageable);
+        return itemRepo.findByTodoListIdAndStateAndTodoList_UserId(todoListId, true, userId, pageable);
+    }
+
+    public Item update(Item item, String text){
+        item.setText(text);
+        return itemRepo.save(item);
+    }
+
+    public void delete(Item item){
+        itemRepo.delete(item);
     }
 
     public void deleteAll() {

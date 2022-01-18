@@ -27,7 +27,8 @@ public class TodoListService {
         return todoListRepo.findAllByUserId(userId);
     }
 
-    public TodoList update(TodoList todoList){
+    public TodoList update(TodoList todoList, String name){
+        todoList.setName(name);
         return todoListRepo.save(todoList);
     }
 

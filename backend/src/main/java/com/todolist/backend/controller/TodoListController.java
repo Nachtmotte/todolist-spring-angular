@@ -88,8 +88,7 @@ public class TodoListController {
                     "errorMessage", "The list does not exist");
         }
 
-        currentList.setName(requestList.getName());
-        currentList = todoListService.update(currentList);
+        currentList = todoListService.update(currentList, requestList.getName());
         TodoListGetDto todoListGetDto = mapper.map(currentList, TodoListGetDto.class);
 
         return ResponseEntityUtil.generateResponse(HttpStatus.OK, "list", todoListGetDto);

@@ -1,6 +1,5 @@
 package com.todolist.backend.dto.todolist;
 
-import com.todolist.backend.dto.user.UserGetDto;
 import lombok.*;
 
 import java.sql.Timestamp;

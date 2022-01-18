@@ -1,22 +1,14 @@
 package com.todolist.backend.controller;
 
 import com.todolist.backend.controller.util.ResponseEntityUtil;
-import com.todolist.backend.dto.item.ItemDto;
-import com.todolist.backend.dto.item.ItemGetDto;
-import com.todolist.backend.dto.item.PageItemsDto;
-import com.todolist.backend.entity.Item;
-import com.todolist.backend.entity.TodoList;
-import com.todolist.backend.service.ItemService;
-import com.todolist.backend.service.TodoListService;
+import com.todolist.backend.dto.item.*;
+import com.todolist.backend.entity.*;
+import com.todolist.backend.service.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.*;
+import org.springframework.http.*;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
@@ -81,6 +73,12 @@ public class ItemController {
                     "errorMessage", "Login to get items");
         }
 
+        TodoList currentList = todoListService.getByIdAndUserId(listId, userId);
+        if(currentList == null){
+            return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND,
+                    "errorMessage", "The list does not exist");
+        }
+
         pageNumber = pageNumber == null ? 0 : pageNumber;
         Pageable pageable = PageRequest.of(pageNumber, items_per_page);
 
@@ -96,5 +94,67 @@ public class ItemController {
         PageItemsDto pageItemsDto = mapper.map(items, PageItemsDto.class);
 
         return ResponseEntityUtil.generateResponse(HttpStatus.OK, "items", pageItemsDto);
+    }
+
+    @PutMapping("/{itemId}")
+    public ResponseEntity<Map<String, Object>> updateItem(
+            Principal principal,
+            @PathVariable("userId") Integer userId,
+            @PathVariable("listId") Integer listId,
+            @PathVariable("itemId") Integer itemId,
+            @Valid @RequestBody ItemDto requestItem) {
+
+        int sessionId = Integer.parseInt(principal.getName());
+        if (sessionId != userId) {
+            return ResponseEntityUtil.generateResponse(HttpStatus.FORBIDDEN,
+                    "errorMessage", "Login to update list");
+        }
+
+        TodoList currentList = todoListService.getByIdAndUserId(listId, userId);
+        if(currentList == null){
+            return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND,
+                    "errorMessage", "The list does not exist");
+        }
+
+        Item currentItem = itemService.getByIdAndListIdAndUserId(itemId, listId, userId);
+        if(currentItem == null){
+            return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND,
+                    "errorMessage", "The item does not exist");
+        }
+
+        currentItem = itemService.update(currentItem, requestItem.getText());
+        ItemGetDto itemGetDto = mapper.map(currentItem, ItemGetDto.class);
+
+        return ResponseEntityUtil.generateResponse(HttpStatus.OK, "item", itemGetDto);
+    }
+
+    @DeleteMapping("/{itemId}")
+    public ResponseEntity<Map<String, Object>> deleteItem(
+            Principal principal,
+            @PathVariable("userId") Integer userId,
+            @PathVariable("listId") Integer listId,
+            @PathVariable("itemId") Integer itemId) {
+
+        int sessionId = Integer.parseInt(principal.getName());
+        if (sessionId != userId) {
+            return ResponseEntityUtil.generateResponse(HttpStatus.FORBIDDEN,
+                    "errorMessage", "Login to delete list");
+        }
+
+        TodoList currentList = todoListService.getByIdAndUserId(listId, userId);
+        if(currentList == null){
+            return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND,
+                    "errorMessage", "The list does not exist");
+        }
+
+        Item currentItem = itemService.getByIdAndListIdAndUserId(itemId, listId, userId);
+        if(currentItem == null){
+            return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND,
+                    "errorMessage", "The item does not exist");
+        }
+
+        itemService.delete(currentItem);
+
+        return ResponseEntityUtil.generateResponse(HttpStatus.OK, null, null);
     }
 }

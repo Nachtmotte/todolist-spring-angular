@@ -54,7 +54,7 @@ public class TodoListController {
     }
 
     @GetMapping()
-    public ResponseEntity<Map<String, Object>> getAllLists(Principal principal, @PathVariable("userId") Integer userId) {
+    public ResponseEntity<Map<String, Object>> getAllListsByUserId(Principal principal, @PathVariable("userId") Integer userId) {
 
         int sessionId = Integer.parseInt(principal.getName());
         if (sessionId != userId) {
@@ -96,7 +96,7 @@ public class TodoListController {
     }
 
     @DeleteMapping("/{listId}")
-    public ResponseEntity<Map<String, Object>> updateList(
+    public ResponseEntity<Map<String, Object>> deleteList(
             Principal principal,
             @PathVariable("userId") Integer userId,
             @PathVariable("listId") Integer listId) {

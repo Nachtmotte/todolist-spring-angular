@@ -1,0 +1,22 @@
+.navbar{
+  justify-content: space-between;
+}
+
+.mr-1{
+  margin-right: 1rem;
+}
+
+.mr-05{
+  margin-right: 0.5rem;
+}
+
+#logo{
+  display: flex;
+  align-items: center
+}
+
+@media (max-width: 330px) {
+  #text-logo{
+    display: none;
+  }
+}

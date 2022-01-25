@@ -1,0 +1,25 @@
+.task {
+  display: flex;
+  padding-top: 0;
+  justify-content: space-between;
+}
+
+.text {
+  margin-top: 1px;
+  margin-left: 0.2rem;
+}
+
+.text-div {
+  display: flex;
+  margin-top: 13px;
+}
+
+.icon-button {
+  padding: 0;
+  min-width: 36px
+}
+
+.button-group {
+  padding-top: 5px;
+  text-align: end;
+}

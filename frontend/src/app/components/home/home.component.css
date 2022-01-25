@@ -3,7 +3,13 @@
 }
 
 .sidenav {
-  width: 200px;
+  width: 300px;
+}
+
+@media (max-width: 460px) {
+  .sidenav {
+    width: 200px;
+  }
 }
 
 .sidenav .mat-toolbar {
@@ -14,4 +20,13 @@
   position: sticky;
   top: 0;
   z-index: 1;
+}
+
+.icon-margin{
+  margin-right: 0.2rem;
+  margin-bottom: 0.2rem
+}
+
+.pt-0{
+  padding-top: 0;
 }

@@ -1,3 +1,18 @@
-<mat-toolbar color="primary">
-  <span>frontend</span>
+<mat-toolbar color="primary" class="navbar">
+  <div id="logo">
+    <mat-icon svgIcon="check-logo" class="mr-05"></mat-icon>
+    <span id="text-logo">TodoList</span>
+  </div>
+  <div *ngIf="false; else loggedIn">
+      <span class="mat-body-1 mr-1">Iniciar Sesión</span>
+      <span class="mat-body-1">Registrarse</span>
+  </div>
+  <ng-template #loggedIn>
+    <mat-menu #appMenu="matMenu">
+      <button mat-menu-item>Perfil</button>
+      <button mat-menu-item>Cerrar sesión</button>
+    </mat-menu>
+
+    <button mat-button [matMenuTriggerFor]="appMenu">User</button>
+  </ng-template>
 </mat-toolbar>

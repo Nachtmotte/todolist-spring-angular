@@ -1,0 +1,49 @@
+<mat-expansion-panel expanded="{{expanded}}">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      {{title}}
+    </mat-panel-title>
+    <mat-panel-description>
+      {{description}}
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+
+  <mat-selection-list>
+    <ng-container *ngFor="let text of texts; last as isLast">
+      <div class="space-center">
+        <mat-list-option checkboxPosition="before">
+          {{text}}
+        </mat-list-option>
+        <button mat-icon-button>
+          <mat-menu #appMenu="matMenu">
+            <button mat-menu-item>
+              <mat-icon>edit</mat-icon>
+              Editar
+            </button>
+            <button mat-menu-item>
+              <mat-icon>delete</mat-icon>
+              Borrar
+            </button>
+            <button mat-menu-item>
+              <mat-icon>date_range</mat-icon>
+              Agregar fecha de vencimiento
+            </button>
+          </mat-menu>
+
+          <button mat-icon-button [matMenuTriggerFor]="appMenu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </button>
+      </div>
+      <mat-divider *ngIf="!isLast"></mat-divider>
+    </ng-container>
+  </mat-selection-list>
+
+  <mat-action-row class="ptb-0">
+    <mat-paginator [length]="100"
+                   [pageSize]="10"
+                   [pageSizeOptions]="[5, 10, 25]">
+    </mat-paginator>
+  </mat-action-row>
+
+</mat-expansion-panel>

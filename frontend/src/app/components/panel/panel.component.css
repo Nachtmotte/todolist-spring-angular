@@ -1,0 +1,19 @@
+.ptb-0 {
+  padding-top: 0;
+  padding-bottom: 0
+}
+
+.space-center {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+::ng-deep .mat-list-base .mat-list-option{
+  display: flex;
+  align-items: center;
+  min-height: 38px;
+  height: 100%;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}

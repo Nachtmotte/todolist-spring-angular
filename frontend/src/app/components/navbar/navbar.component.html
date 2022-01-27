@@ -4,8 +4,8 @@
     <span id="text-logo">TodoList</span>
   </div>
   <div *ngIf="false; else loggedIn">
-      <span class="mat-body-1 mr-1">Iniciar Sesión</span>
-      <span class="mat-body-1">Registrarse</span>
+    <span class="mat-body-1 mr-1">Iniciar Sesión</span>
+    <span class="mat-body-1">Registrarse</span>
   </div>
   <ng-template #loggedIn>
     <mat-menu #appMenu="matMenu">
@@ -13,6 +13,8 @@
       <button mat-menu-item>Cerrar sesión</button>
     </mat-menu>
 
-    <button mat-button [matMenuTriggerFor]="appMenu">User</button>
+    <button mat-button [matMenuTriggerFor]="appMenu">User
+      <mat-icon class="ml-02">account_circle</mat-icon>
+    </button>
   </ng-template>
 </mat-toolbar>

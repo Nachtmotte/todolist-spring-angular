@@ -10,14 +10,18 @@ import {LayoutModule} from '@angular/cdk/layout';
 import {MaterialModule} from "./material/material.module";
 import {MatIconRegistry} from "@angular/material/icon";
 import {HttpClientModule} from "@angular/common/http";
-import { TodolistComponent } from './components/todolist/todolist.component';
+import {TodolistComponent} from './components/todolist/todolist.component';
+import {PanelComponent} from './components/panel/panel.component';
+import {MatPaginatorIntl} from '@angular/material/paginator';
+import {CustomPaginator} from "./material/CustomPaginatorConfiguration";
 
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
     HomeComponent,
-    TodolistComponent
+    TodolistComponent,
+    PanelComponent
   ],
   imports: [
     BrowserModule,
@@ -27,7 +31,9 @@ import { TodolistComponent } from './components/todolist/todolist.component';
     HttpClientModule,
     MaterialModule
   ],
-  providers: [],
+  providers: [
+    {provide: MatPaginatorIntl, useValue: CustomPaginator()}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
@@ -39,8 +45,5 @@ export class AppModule {
     this.matIconRegistry.addSvgIcon(
       `check-logo`,
       this.domSanitizer.bypassSecurityTrustResourceUrl("../assets/check-logo.svg"));
-    this.matIconRegistry.addSvgIcon(
-      `edit-icon`,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("../assets/edit.svg"));
   }
 }

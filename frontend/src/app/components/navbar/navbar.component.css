@@ -10,6 +10,10 @@
   margin-right: 0.5rem;
 }
 
+.ml-02{
+  margin-left: 0.2rem;
+}
+
 #logo{
   display: flex;
   align-items: center

@@ -4,7 +4,7 @@
                [mode]="(isHandset$ | async) ? 'over' : 'side'"
                [opened]="(isHandset$ | async) === false">
     <mat-toolbar class="mt-1">Carpetas</mat-toolbar>
-    <mat-nav-list class="pt-0">
+    <mat-nav-list class="pt-0 text-cut">
       <a mat-list-item href="#">
         <mat-icon class="icon-margin">folder_open</mat-icon>
         Link 1
@@ -17,7 +17,7 @@
         <mat-icon class="icon-margin">folder_open</mat-icon>
         Link 3
       </a>
-      <a mat-list-item>
+      <a mat-list-item style="color: #777">
         <mat-icon class="icon-margin">add_circle_outline</mat-icon>
         Nueva carpeta
       </a>

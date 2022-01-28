@@ -1,14 +1,14 @@
-<mat-card style="margin-bottom: 2px">
+<mat-card>
   <mat-card-title class="card-title">
     <span>Una carpeta</span>
     <mat-menu #appMenu="matMenu">
       <button mat-menu-item>
         <mat-icon>edit</mat-icon>
-        Editar
+        Renombrar
       </button>
       <button mat-menu-item>
         <mat-icon>delete</mat-icon>
-        Borrar
+        Borrar carpeta
       </button>
     </mat-menu>
 
@@ -17,11 +17,46 @@
     </button>
   </mat-card-title>
   <mat-card-subtitle>Creada 20/05/2023</mat-card-subtitle>
+
+  <mat-card class="mb-2">
+    <mat-form-field appearance="legacy" [style.display]="'block'">
+      <mat-label>Agregar una tarea</mat-label>
+      <textarea [(ngModel)]="text" #name="ngModel" cdkTextareaAutosize rows="1" class="text-area" matInput required minlength="3" maxlength="255"></textarea>
+      <mat-icon style="padding-top: 8px" matPrefix>playlist_add</mat-icon>
+      <mat-hint align="start">
+        <strong>
+          Vencimiento: {{selectedDate == null ? "sin asignar" : selectedDate|date:'dd/MM/yy'}}
+        </strong>
+      </mat-hint>
+    </mat-form-field>
+    <mat-card-actions align="end">
+
+      <mat-menu #calendar="matMenu">
+        <mat-calendar [selected]="selectedDate" (selectedChange)="saveDate($event)"
+                      (click)="$event.stopPropagation()"
+                      [minDate]="minDate"></mat-calendar>
+      </mat-menu>
+
+      <button mat-raised-button matTooltip="Agregar fecha de vencimiento" #menuTrigger="matMenuTrigger"
+              [matMenuTriggerFor]="calendar">
+        <mat-icon>date_range</mat-icon>
+        <span class="ml-02 text-icon">Fecha vencimiento</span>
+      </button>
+
+      <button [disabled]="name.invalid" (click)="saveItem()" mat-raised-button matTooltip="Agregar tarea" color="primary" class="mr-05">
+        <mat-icon>add</mat-icon>
+        <span class="ml-02 text-icon">Agregar</span>
+      </button>
+
+    </mat-card-actions>
+  </mat-card>
+
+  <mat-accordion>
+    <app-panel class="mb-2"
+               [title]="'Tareas sin completar'"
+               [description]="'Total: 10'"
+               [expanded]="true"></app-panel>
+  </mat-accordion>
+
 </mat-card>
 
-<mat-accordion>
-  <app-panel
-    [title]="'Sin completar'"
-    [description]="'Total: 10'"
-    [expanded]="true"></app-panel>
-</mat-accordion>

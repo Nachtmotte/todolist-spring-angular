@@ -14,9 +14,10 @@ import {TodolistComponent} from './components/todolist/todolist.component';
 import {PanelComponent} from './components/panel/panel.component';
 import {MatPaginatorIntl} from '@angular/material/paginator';
 import {CustomPaginator} from "./material/CustomPaginatorConfiguration";
-import { NameDialogComponent } from './components/name-dialog/name-dialog.component';
-import {MatInputModule} from "@angular/material/input";
+import {NameDialogComponent} from './components/name-dialog/name-dialog.component';
 import {FormsModule} from "@angular/forms";
+import {MAT_DATE_LOCALE} from "@angular/material/core";
+
 
 @NgModule({
   declarations: [
@@ -28,18 +29,18 @@ import {FormsModule} from "@angular/forms";
     NameDialogComponent
   ],
   entryComponents: [NameDialogComponent],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    AppRoutingModule,
-    LayoutModule,
-    HttpClientModule,
-    MaterialModule,
-    MatInputModule,
-    FormsModule
-  ],
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        AppRoutingModule,
+        LayoutModule,
+        HttpClientModule,
+        MaterialModule,
+        FormsModule
+    ],
   providers: [
-    {provide: MatPaginatorIntl, useValue: CustomPaginator()}
+    {provide: MatPaginatorIntl, useValue: CustomPaginator()},
+    { provide: MAT_DATE_LOCALE, useValue: 'es-ES' }
   ],
   bootstrap: [AppComponent]
 })

@@ -35,3 +35,12 @@
   overflow:hidden;
   white-space:nowrap;
 }
+
+::ng-deep .warning{
+  background: #F44336;
+}
+
+
+::ng-deep .warning .mat-button-wrapper{
+  color: #FFF;
+}

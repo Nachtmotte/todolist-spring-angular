@@ -17,3 +17,8 @@
   padding-top: 5px;
   padding-bottom: 5px;
 }
+@media (max-width: 700px) {
+  ::ng-deep .mat-expansion-panel-body {
+    padding: 0 !important;
+  }
+}

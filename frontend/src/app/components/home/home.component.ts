@@ -4,6 +4,7 @@ import {Observable} from 'rxjs';
 import {map, shareReplay} from 'rxjs/operators';
 import {NameDialogComponent} from "../name-dialog/name-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-home',
@@ -18,7 +19,7 @@ export class HomeComponent {
       shareReplay()
     );
 
-  constructor(private breakpointObserver: BreakpointObserver, public dialog: MatDialog) {
+  constructor(private breakpointObserver: BreakpointObserver, private snackBar: MatSnackBar, public dialog: MatDialog) {
   }
 
   openDialog() {
@@ -33,8 +34,14 @@ export class HomeComponent {
     dialogRef.afterClosed().subscribe(result => {
       if (result.state) {
         console.log(result.data)
+      } else {
+        this.openSnackBar("No se creo")
       }
     });
+  }
+
+  openSnackBar(message: string){
+    this.snackBar.open(message, "Cerrar", {duration: 60000, panelClass: ['warning']});
   }
 
 }

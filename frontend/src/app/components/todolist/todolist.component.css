@@ -5,4 +5,49 @@
   margin-bottom: 0
 }
 
+.mb-2{
+  margin-bottom: 2px;
+}
+
+.mr-05{
+  margin-right: 0.5rem !important;
+}
+
+.ml-02{
+  margin-left: 0.2rem;
+}
+
+.pt-02{
+  padding-top: 0.2rem;
+}
+
+.text-area{
+  min-height: 22px;
+  padding-left: 4px;
+}
+
+@media (max-width: 380px) {
+  .text-icon{
+    display: none;
+  }
+
+  ::ng-deep .mat-raised-button{
+    padding: 0 !important;
+  }
+}
+
+::ng-deep .mat-form-field-wrapper{
+  padding-bottom: 0;
+}
+
+::ng-deep .mat-raised-button{
+  min-width: 36px !important;
+  padding: 0 10px !important;
+}
+
+::ng-deep .mat-form-field-flex{
+  align-items: center !important;
+}
+
+
 

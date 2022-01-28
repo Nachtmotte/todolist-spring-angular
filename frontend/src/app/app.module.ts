@@ -14,6 +14,9 @@ import {TodolistComponent} from './components/todolist/todolist.component';
 import {PanelComponent} from './components/panel/panel.component';
 import {MatPaginatorIntl} from '@angular/material/paginator';
 import {CustomPaginator} from "./material/CustomPaginatorConfiguration";
+import { NameDialogComponent } from './components/name-dialog/name-dialog.component';
+import {MatInputModule} from "@angular/material/input";
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -21,15 +24,19 @@ import {CustomPaginator} from "./material/CustomPaginatorConfiguration";
     NavbarComponent,
     HomeComponent,
     TodolistComponent,
-    PanelComponent
+    PanelComponent,
+    NameDialogComponent
   ],
+  entryComponents: [NameDialogComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
     LayoutModule,
     HttpClientModule,
-    MaterialModule
+    MaterialModule,
+    MatInputModule,
+    FormsModule
   ],
   providers: [
     {provide: MatPaginatorIntl, useValue: CustomPaginator()}

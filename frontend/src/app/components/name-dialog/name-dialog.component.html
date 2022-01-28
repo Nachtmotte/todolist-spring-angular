@@ -1,0 +1,12 @@
+<h2 mat-dialog-title>{{data.title}}</h2>
+<mat-dialog-content>
+  <mat-form-field appearance="legacy" [style.display]="'block'">
+    <mat-label>{{data.inputName}}</mat-label>
+    <input type="text" matInput [(ngModel)]="inputData" required minlength="3" maxlength="24" #text="ngModel">
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions align="end" style="padding-top: 0">
+  <button mat-raised-button [mat-dialog-close]="{state: false, data: ''}">cancelar</button>
+  <button mat-raised-button color="primary"
+          [mat-dialog-close]="{state:true, data: inputData}" [disabled]="text.invalid">{{data.buttonName}}</button>
+</mat-dialog-actions>

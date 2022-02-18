@@ -20,7 +20,7 @@
 }
 
 @media (max-width: 330px) {
-  #text-logo{
+  #icon-logo{
     display: none;
   }
 }

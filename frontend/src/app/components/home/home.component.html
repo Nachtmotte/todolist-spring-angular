@@ -5,19 +5,11 @@
                [opened]="(isHandset$ | async) === false">
     <mat-toolbar class="mt-1">Carpetas</mat-toolbar>
     <mat-nav-list class="pt-0 text-cut">
-      <a mat-list-item href="#">
+      <mat-list-item *ngFor="let folder of folders" (click)="changeFolder(folder)">
         <mat-icon class="icon-margin">folder_open</mat-icon>
-        Link 1
-      </a>
-      <a mat-list-item href="#">
-        <mat-icon class="icon-margin">folder_open</mat-icon>
-        Link 2
-      </a>
-      <a mat-list-item href="#">
-        <mat-icon class="icon-margin">folder_open</mat-icon>
-        Link 3
-      </a>
-      <mat-list-item style="color: #777" (click)="openDialog()">
+        {{folder.name|titlecase}}
+      </mat-list-item>
+      <mat-list-item style="color: #777" (click)="createFolder()">
         <mat-icon class="icon-margin">add_circle_outline</mat-icon>
         Nueva carpeta
       </mat-list-item>
@@ -26,12 +18,12 @@
   <mat-sidenav-content>
     <button
       type="button"
-      aria-label="Toggle sidenav"
       mat-icon-button
       (click)="drawer.toggle()"
       *ngIf="isHandset$ | async">
-      <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      <mat-icon>menu</mat-icon>
     </button>
-    <app-todolist></app-todolist>
+    <app-todolist [folder]="folder" (updateFolderEvent)="updateFolder()"
+                  (deleteFolderEvent)="deleteFolder()"></app-todolist>
   </mat-sidenav-content>
 </mat-sidenav-container>

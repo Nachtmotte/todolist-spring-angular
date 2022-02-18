@@ -1,27 +1,26 @@
 <mat-card>
   <mat-card-title class="card-title">
-    <span>Una carpeta</span>
+    <span>{{folder.name|titlecase}}</span>
     <mat-menu #appMenu="matMenu">
-      <button mat-menu-item>
+      <button mat-menu-item (click)="updateFolder()">
         <mat-icon>edit</mat-icon>
         Renombrar
       </button>
-      <button mat-menu-item>
+      <button mat-menu-item (click)="deleteFolder()">
         <mat-icon>delete</mat-icon>
         Borrar carpeta
       </button>
     </mat-menu>
-
     <button mat-icon-button [matMenuTriggerFor]="appMenu">
       <mat-icon>menu</mat-icon>
     </button>
   </mat-card-title>
-  <mat-card-subtitle>Creada 20/05/2023</mat-card-subtitle>
+  <mat-card-subtitle>Creada: {{folder.created|date:'dd/MM/yy'}}</mat-card-subtitle>
 
-  <mat-card class="mb-2">
+  <mat-card class="mb-2" style="background-color: #fafafa; margin-bottom: 15px; border: 1px #eee solid">
     <mat-form-field appearance="legacy" [style.display]="'block'">
-      <mat-label>Agregar una tarea</mat-label>
-      <textarea [(ngModel)]="text" #name="ngModel" cdkTextareaAutosize rows="1" class="text-area" matInput required minlength="3" maxlength="255"></textarea>
+      <mat-label>Escribe una tarea</mat-label>
+      <textarea [(ngModel)]="text" cdkTextareaAutosize rows="1" class="text-area" matInput maxlength="255"></textarea>
       <mat-icon style="padding-top: 8px" matPrefix>playlist_add</mat-icon>
       <mat-hint align="start">
         <strong>
@@ -43,7 +42,8 @@
         <span class="ml-02 text-icon">Fecha vencimiento</span>
       </button>
 
-      <button [disabled]="name.invalid" (click)="saveItem()" mat-raised-button matTooltip="Agregar tarea" color="primary" class="mr-05">
+      <button [disabled]="text.length < 3" (click)="saveItem()" mat-raised-button matTooltip="Agregar tarea"
+              color="primary" class="mr-05">
         <mat-icon>add</mat-icon>
         <span class="ml-02 text-icon">Agregar</span>
       </button>
@@ -51,11 +51,24 @@
     </mat-card-actions>
   </mat-card>
 
-  <mat-accordion>
-    <app-panel class="mb-2"
-               [title]="'Tareas sin completar'"
-               [description]="'Total: 10'"
-               [expanded]="true"></app-panel>
+  <mat-accordion multi>
+    <app-panel [title]="'Tareas sin completar'"
+               [state]="'unchecked'"
+               [expanded]="true"
+               [newItem]="newItem"
+               [updatePanels]="updatePanels"></app-panel>
+
+    <app-panel [title]="'Tareas completadas'"
+               [state]="'checked'"
+               [expanded]="false"
+               [newItem]="null"
+               [updatePanels]="updatePanels"></app-panel>
+
+    <app-panel [title]="'Tareas vencidas'"
+               [state]="'expired'"
+               [expanded]="false"
+               [newItem]="null"
+               [updatePanels]="updatePanels"></app-panel>
   </mat-accordion>
 
 </mat-card>

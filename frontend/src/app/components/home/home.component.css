@@ -24,7 +24,6 @@
 
 .icon-margin{
   margin-right: 0.2rem;
-  margin-bottom: 0.2rem
 }
 
 .pt-0{
@@ -39,7 +38,6 @@
 ::ng-deep .warning{
   background: #F44336;
 }
-
 
 ::ng-deep .warning .mat-button-wrapper{
   color: #FFF;

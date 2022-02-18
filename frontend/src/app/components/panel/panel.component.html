@@ -1,48 +1,45 @@
 <mat-expansion-panel expanded="{{expanded}}">
-  <mat-expansion-panel-header>
-    <mat-panel-title>
+  <mat-expansion-panel-header style="background-color: #3F51B5" (click)="changeExpanded()">
+    <mat-panel-title style="color: white">
       {{title}}
     </mat-panel-title>
-    <mat-panel-description>
-      {{description}}
-    </mat-panel-description>
   </mat-expansion-panel-header>
 
   <mat-selection-list>
-    <ng-container *ngFor="let text of texts; last as isLast">
+    <ng-container *ngFor="let item of itemsPage.content; last as isLast">
       <div class="space-center">
-        <mat-list-option checkboxPosition="before" color="primary">
-          {{text}}
+
+        <mat-list-option checkboxPosition="before" color="primary" selected="{{item.state}}" (click)="changeStateItem(item)">
+          {{item.text}}
+          <div class="expired-text" *ngIf="item.expired != null">Vencimiento: {{item.expired|date:'dd/MM/yy'}}</div>
         </mat-list-option>
+
         <button mat-icon-button>
           <mat-menu #appMenu="matMenu">
-            <button mat-menu-item>
+            <button mat-menu-item (click)="updateItem(item)">
               <mat-icon>edit</mat-icon>
               Editar
             </button>
-            <button mat-menu-item>
+            <button mat-menu-item (click)="deleteItem(item)">
               <mat-icon>delete</mat-icon>
               Borrar
             </button>
-            <button mat-menu-item>
-              <mat-icon>date_range</mat-icon>
-              Agregar fecha de vencimiento
-            </button>
           </mat-menu>
-
           <button mat-icon-button [matMenuTriggerFor]="appMenu">
             <mat-icon>more_vert</mat-icon>
           </button>
         </button>
+
       </div>
       <mat-divider *ngIf="!isLast"></mat-divider>
     </ng-container>
   </mat-selection-list>
 
-  <mat-action-row class="ptb-0">
-    <mat-paginator [length]="100"
-                   [pageSize]="10"
-                   [pageSizeOptions]="[5, 10, 25]">
+  <mat-action-row class="ptb-0" style="background-color: #3F51B5">
+    <mat-paginator style="background-color: #3F51B5; color: white"
+      [length]="itemsPage.totalElements"
+                   [pageSize]="itemsPage.size"
+                   [pageSizeOptions]="[5, 10, 20]">
     </mat-paginator>
   </mat-action-row>
 

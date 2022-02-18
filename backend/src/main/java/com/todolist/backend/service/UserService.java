@@ -27,7 +27,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepo.findByUsername(username);
+        User user = userRepo.findByUsernameOrEmail(username, username);
         if (user == null) {
             throw new UsernameNotFoundException("Username not found");
         }
@@ -76,8 +76,8 @@ public class UserService implements UserDetailsService {
     }
 
     public boolean isUniqueData(String username, String email) {
-        List<User> users = userRepo.findByUsernameOrEmail(username, email);
-        return users.isEmpty();
+        User user = userRepo.findByUsernameOrEmail(username, email);
+        return user == null;
     }
 
     public boolean isUniqueDataForUpdate(int userId, String username) {

@@ -3,7 +3,9 @@ package com.todolist.backend.controller;
 import com.todolist.backend.entity.Role;
 import com.todolist.backend.entity.User;
 import com.todolist.backend.repository.RoleRepository;
+import com.todolist.backend.repository.TodoListRepository;
 import com.todolist.backend.security.util.JwtService;
+import com.todolist.backend.service.TodoListService;
 import com.todolist.backend.service.UserService;
 import org.junit.After;
 import org.junit.Before;
@@ -35,6 +37,12 @@ public class UserControllerIntegrationTest {
 
     @Autowired
     RoleRepository roleRepo;
+
+    @Autowired
+    TodoListRepository todoListRepo;
+
+    @Autowired
+    TodoListService todoListService;
 
     @Autowired
     UserService userService;
@@ -76,6 +84,7 @@ public class UserControllerIntegrationTest {
 
     @After
     public void tearDown() {
+        todoListRepo.deleteAll();
         userService.deleteAll();
         roleRepo.deleteAll();
     }

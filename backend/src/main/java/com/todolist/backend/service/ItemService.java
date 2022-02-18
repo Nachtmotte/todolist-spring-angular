@@ -26,7 +26,7 @@ public class ItemService {
         return itemRepo.findByIdAndTodoListIdAndTodoList_UserId(id, listId, userId);
     }
 
-    public Page<Item> getAllItemsUnChecked(int todoListId, int userId, Pageable pageable) {
+    public Page<Item> getAllItemsUnchecked(int todoListId, int userId, Pageable pageable) {
         return itemRepo.findByTodoListIdAndStateAndExpiredIsNullOrExpiredAfterAndTodoList_UserId(
                 todoListId, false, Timestamp.from(Instant.now()), userId, pageable);
     }

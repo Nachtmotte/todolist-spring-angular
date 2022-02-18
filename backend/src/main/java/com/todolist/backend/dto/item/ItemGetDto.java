@@ -14,7 +14,5 @@ public class ItemGetDto extends ItemDto {
 
     private Timestamp created;
 
-    private Timestamp expired;
-
     private Integer todoListId;
 }

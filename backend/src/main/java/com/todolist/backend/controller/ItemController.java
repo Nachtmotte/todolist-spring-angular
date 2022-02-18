@@ -80,11 +80,11 @@ public class ItemController {
         }
 
         pageNumber = pageNumber == null ? 0 : pageNumber;
-        Pageable pageable = PageRequest.of(pageNumber, items_per_page);
+        Pageable pageable = PageRequest.of(pageNumber, items_per_page, Sort.by("created").descending());
 
         Page<Item> items;
         if (state == null || !state.equals("checked") && !state.equals("expired")) {
-            items = itemService.getAllItemsUnChecked(listId, userId, pageable);
+            items = itemService.getAllItemsUnchecked(listId, userId, pageable);
         }else if(state.equals("checked")){
             items = itemService.getAllItemsChecked(listId, userId, pageable);
         }else{

@@ -6,7 +6,6 @@ import com.todolist.backend.entity.*;
 import com.todolist.backend.service.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.http.*;
 import org.springframework.security.access.annotation.Secured;
@@ -23,9 +22,6 @@ import static com.todolist.backend.entity.Roles.Constants.ROLE_USER;
 @Secured(ROLE_USER)
 @RequestMapping(path = "/users/{userId}/lists/{listId}/items", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemController {
-
-    @Value("${pagination.items.number}")
-    int items_per_page;
 
     private final ItemService itemService;
 
@@ -47,7 +43,7 @@ public class ItemController {
         }
 
         TodoList currentList = todoListService.getByIdAndUserId(listId, userId);
-        if(currentList == null){
+        if (currentList == null) {
             return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND,
                     "errorMessage", "The list does not exist");
         }
@@ -65,6 +61,7 @@ public class ItemController {
             @PathVariable("userId") Integer userId,
             @PathVariable("listId") Integer listId,
             @RequestParam(value = "page", required = false) Integer pageNumber,
+            @RequestParam(value = "per_page", required = false) Integer items_per_page,
             @RequestParam(value = "state", required = false) String state) {
 
         int sessionId = Integer.parseInt(principal.getName());
@@ -74,20 +71,21 @@ public class ItemController {
         }
 
         TodoList currentList = todoListService.getByIdAndUserId(listId, userId);
-        if(currentList == null){
+        if (currentList == null) {
             return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND,
                     "errorMessage", "The list does not exist");
         }
 
         pageNumber = pageNumber == null ? 0 : pageNumber;
+        items_per_page = items_per_page == null ? 10 : items_per_page;
         Pageable pageable = PageRequest.of(pageNumber, items_per_page, Sort.by("created").descending());
 
         Page<Item> items;
         if (state == null || !state.equals("checked") && !state.equals("expired")) {
             items = itemService.getAllItemsUnchecked(listId, userId, pageable);
-        }else if(state.equals("checked")){
+        } else if (state.equals("checked")) {
             items = itemService.getAllItemsChecked(listId, userId, pageable);
-        }else{
+        } else {
             items = itemService.getAllItemsExpired(listId, userId, pageable);
         }
 
@@ -102,7 +100,7 @@ public class ItemController {
             @PathVariable("userId") Integer userId,
             @PathVariable("listId") Integer listId,
             @PathVariable("itemId") Integer itemId,
-            @Valid @RequestBody ItemDto requestItem) {
+            @Valid @RequestBody ItemPutDto requestItem) {
 
         int sessionId = Integer.parseInt(principal.getName());
         if (sessionId != userId) {
@@ -111,18 +109,19 @@ public class ItemController {
         }
 
         TodoList currentList = todoListService.getByIdAndUserId(listId, userId);
-        if(currentList == null){
+        if (currentList == null) {
             return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND,
                     "errorMessage", "The list does not exist");
         }
 
         Item currentItem = itemService.getByIdAndListIdAndUserId(itemId, listId, userId);
-        if(currentItem == null){
+        if (currentItem == null) {
             return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND,
                     "errorMessage", "The item does not exist");
         }
 
-        currentItem = itemService.update(currentItem, requestItem.getText());
+        currentItem = itemService.update(currentItem, requestItem.getText(),
+                requestItem.getExpired(), requestItem.getState());
         ItemGetDto itemGetDto = mapper.map(currentItem, ItemGetDto.class);
 
         return ResponseEntityUtil.generateResponse(HttpStatus.OK, "item", itemGetDto);
@@ -142,13 +141,13 @@ public class ItemController {
         }
 
         TodoList currentList = todoListService.getByIdAndUserId(listId, userId);
-        if(currentList == null){
+        if (currentList == null) {
             return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND,
                     "errorMessage", "The list does not exist");
         }
 
         Item currentItem = itemService.getByIdAndListIdAndUserId(itemId, listId, userId);
-        if(currentItem == null){
+        if (currentItem == null) {
             return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND,
                     "errorMessage", "The item does not exist");
         }

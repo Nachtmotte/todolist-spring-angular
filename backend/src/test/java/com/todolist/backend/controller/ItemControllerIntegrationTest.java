@@ -302,7 +302,8 @@ public class ItemControllerIntegrationTest {
         String userId = Integer.toString(testUser.getId());
         String todoListId = Integer.toString(testList.getId());
         String itemId = Integer.toString(testItemUnchecked.getId());
-        String itemNewData = "{\"text\": \"newText\"}";
+        String itemNewData = "{\"text\": \"newText\"," +
+                "\"state\": \"false\"}";
 
         //when
         ResultActions result = mockMvc.perform(put("/users/" + userId + "/lists/" + todoListId + "/items/" + itemId)
@@ -322,7 +323,8 @@ public class ItemControllerIntegrationTest {
         String userId = Integer.toString(testUser.getId() + 1);
         String todoListId = Integer.toString(testList.getId());
         String itemId = Integer.toString(testItemUnchecked.getId());
-        String itemNewData = "{\"text\": \"newText\"}";
+        String itemNewData = "{\"text\": \"newText\"," +
+                "\"state\": \"false\"}";
 
         //when
         ResultActions result = mockMvc.perform(put("/users/" + userId + "/lists/" + todoListId + "/items/" + itemId)
@@ -341,7 +343,8 @@ public class ItemControllerIntegrationTest {
         String userId = Integer.toString(testUser.getId());
         String todoListId = Integer.toString(testList.getId() + 1);
         String itemId = Integer.toString(testItemUnchecked.getId());
-        String itemNewData = "{\"text\": \"newText\"}";
+        String itemNewData = "{\"text\": \"newText\"," +
+                "\"state\": \"false\"}";
 
         //when
         ResultActions result = mockMvc.perform(put("/users/" + userId + "/lists/" + todoListId + "/items/" + itemId)
@@ -360,7 +363,8 @@ public class ItemControllerIntegrationTest {
         String userId = Integer.toString(testUser.getId());
         String todoListId = Integer.toString(testList.getId());
         String itemId = Integer.toString(testItemUnchecked.getId() + 10);
-        String itemNewData = "{\"text\": \"newText\"}";
+        String itemNewData = "{\"text\": \"newText\"," +
+                "\"state\": \"false\"}";
 
         //when
         ResultActions result = mockMvc.perform(put("/users/" + userId + "/lists/" + todoListId + "/items/" + itemId)
@@ -379,7 +383,8 @@ public class ItemControllerIntegrationTest {
         String userId = Integer.toString(testUser.getId());
         String todoListId = Integer.toString(testList.getId());
         String itemId = Integer.toString(testItemUnchecked.getId());
-        String itemNewData = "{\"text\": \"newText\"}";
+        String itemNewData = "{\"text\": \"newText\"," +
+                "\"state\": \"false\"}";
 
         //when
         ResultActions result = mockMvc.perform(put("/users/" + userId + "/lists/" + todoListId + "/items/" + itemId)

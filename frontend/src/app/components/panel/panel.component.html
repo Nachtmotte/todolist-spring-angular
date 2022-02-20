@@ -5,41 +5,58 @@
     </mat-panel-title>
   </mat-expansion-panel-header>
 
-  <mat-selection-list>
-    <ng-container *ngFor="let item of itemsPage.content; last as isLast">
-      <div class="space-center">
-
-        <mat-list-option checkboxPosition="before" color="primary" selected="{{item.state}}" (click)="changeStateItem(item)">
-          {{item.text}}
-          <div class="expired-text" *ngIf="item.expired != null">Vencimiento: {{item.expired|date:'dd/MM/yy'}}</div>
-        </mat-list-option>
-
-        <button mat-icon-button>
-          <mat-menu #appMenu="matMenu">
-            <button mat-menu-item (click)="updateItem(item)">
-              <mat-icon>edit</mat-icon>
-              Editar
-            </button>
-            <button mat-menu-item (click)="deleteItem(item)">
-              <mat-icon>delete</mat-icon>
-              Borrar
-            </button>
-          </mat-menu>
-          <button mat-icon-button [matMenuTriggerFor]="appMenu">
-            <mat-icon>more_vert</mat-icon>
-          </button>
-        </button>
-
+  <mat-selection-list style="min-height: 32px;" [ngStyle]="{'height.px': itemsPage.size * 50}">
+    <ng-container *ngIf="loading">
+      <div style="display: flex; justify-content: center; padding-top: 8px">
+        <mat-spinner diameter="18"></mat-spinner>
       </div>
-      <mat-divider *ngIf="!isLast"></mat-divider>
+    </ng-container>
+    <ng-container *ngIf="!loading">
+      <div *ngIf="itemsPage.content.length == 0" style="text-align: center; align-items: center; padding-top: 8px; height: 42px">
+        <span class="mat-subheading-1" style="color: #777777">-- Nada por hacer --</span>
+      </div>
+      <ng-container *ngFor="let item of itemsPage.content; last as isLast">
+        <div class="space-center">
+
+          <mat-list-option checkboxPosition="before" color="primary" selected="{{item.state}}"
+                           (click)="changeStateItem(item)">
+            <span [ngStyle]="item.state? {'text-decoration': 'line-through'} : {}">{{item.text}}</span>
+            <div class="expired-text" *ngIf="item.expired != null">Vencimiento: {{item.expired|date:'dd/MM/yy'}}</div>
+          </mat-list-option>
+
+          <button mat-icon-button>
+            <mat-menu #appMenu="matMenu">
+              <button mat-menu-item (click)="updateItemTextAndExpired(item)">
+                <mat-icon>edit</mat-icon>
+                Editar
+              </button>
+              <button mat-menu-item (click)="deleteItem(item)">
+                <mat-icon>delete</mat-icon>
+                Borrar
+              </button>
+            </mat-menu>
+            <button mat-icon-button [matMenuTriggerFor]="appMenu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+          </button>
+
+        </div>
+        <mat-divider *ngIf="!isLast"></mat-divider>
+      </ng-container>
+      <ng-container
+        *ngFor="let x of [].constructor(this.itemsPage.size - (this.itemsPage.numberOfElements == 0? 1 : this.itemsPage.numberOfElements))">
+        <mat-divider></mat-divider>
+        <div style="height: 50px"></div>
+      </ng-container>
     </ng-container>
   </mat-selection-list>
 
   <mat-action-row class="ptb-0" style="background-color: #3F51B5">
     <mat-paginator style="background-color: #3F51B5; color: white"
-      [length]="itemsPage.totalElements"
+                   [length]="itemsPage.totalElements"
                    [pageSize]="itemsPage.size"
-                   [pageSizeOptions]="[5, 10, 20]">
+                   [pageSizeOptions]="[5, 10, 20]"
+                   (page)="getItems($event.pageIndex, $event.pageSize)">
     </mat-paginator>
   </mat-action-row>
 

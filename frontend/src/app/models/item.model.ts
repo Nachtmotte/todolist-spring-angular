@@ -16,3 +16,11 @@ export class Item {
     this.todoListId = todoListId;
   }
 }
+
+export class GetItem{
+  item: Item;
+
+  constructor(item: Item) {
+    this.item = item
+  }
+}

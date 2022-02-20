@@ -9,7 +9,7 @@ import {HomeComponent} from './components/home/home.component';
 import {LayoutModule} from '@angular/cdk/layout';
 import {MaterialModule} from "./components/material/material.module";
 import {MatIconRegistry} from "@angular/material/icon";
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {TodolistComponent} from './components/todolist/todolist.component';
 import {PanelComponent} from './components/panel/panel.component';
 import {MatPaginatorIntl} from '@angular/material/paginator';
@@ -18,6 +18,8 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MAT_DATE_LOCALE} from "@angular/material/core";
 import {getSpanishPaginatorIntl} from "./components/material/spanish-paginator-intl";
 import {LoginComponent} from './components/login/login.component';
+import {JwtInterceptor} from "./interceptors/jwt.interceptor";
+
 
 @NgModule({
   declarations: [
@@ -30,19 +32,20 @@ import {LoginComponent} from './components/login/login.component';
     LoginComponent
   ],
   entryComponents: [DialogComponent],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    AppRoutingModule,
-    LayoutModule,
-    HttpClientModule,
-    MaterialModule,
-    FormsModule,
-    ReactiveFormsModule,
-  ],
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        AppRoutingModule,
+        LayoutModule,
+        HttpClientModule,
+        MaterialModule,
+        FormsModule,
+        ReactiveFormsModule,
+    ],
   providers: [
+    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: MatPaginatorIntl, useValue: getSpanishPaginatorIntl()},
-    {provide: MAT_DATE_LOCALE, useValue: 'es-ES'}
+    {provide: MAT_DATE_LOCALE, useValue: 'es-ES'},
   ],
   bootstrap: [AppComponent]
 })

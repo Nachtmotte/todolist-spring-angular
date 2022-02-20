@@ -1,41 +1,57 @@
-import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, SimpleChanges} from '@angular/core';
 import {ItemsPage} from "../../models/itemsPage.model";
 import {Item} from "../../models/item.model";
 import {DialogComponent} from "../dialog/dialog.component";
-import {TodoList} from "../../models/todoList.model";
 import {MatDialog} from "@angular/material/dialog";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {TodoList} from "../../models/todoList.model";
+import {PanelService} from "../../services/panel.service";
 
 @Component({
   selector: 'app-panel',
   templateUrl: './panel.component.html',
   styleUrls: ['./panel.component.css']
 })
-export class PanelComponent implements OnInit {
+export class PanelComponent {
 
   @Input() title: string = '';
   @Input() expanded: boolean = false;
   @Input() state: string = '';
+  @Input() todoList: TodoList | null = null;
   @Input() newItem: Item | null = null;
   @Input() updatePanels: any | null = null;
-  x: number = 0;
+  loading: boolean = true;
+  itemsPage: ItemsPage = {
+    first: true,
+    last: true,
+    number: 0,
+    numberOfElements: 0,
+    size: 5,
+    totalPages: 0,
+    totalElements: 0,
+    content: []
+  }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['newItem'] && !changes['newItem'].firstChange) {
-      //Consulta a la db para mandar item
-      this.itemsPage.content.unshift(changes['newItem'].currentValue);
-      this.itemsPage.totalElements += 1;
-      if(this.itemsPage.numberOfElements == this.itemsPage.size){
-        console.log(this.itemsPage.content.pop());
-        this.itemsPage.totalPages = Math.ceil(this.itemsPage.totalElements/this.itemsPage.size);
-        if(this.itemsPage.last){
-          this.itemsPage.last = false;
-        }
-      }else{
-        this.itemsPage.numberOfElements += 1;
-      }
-      console.log(changes['newItem'].currentValue);
-      console.log(this.itemsPage);
+    if (changes['newItem'] && !changes['newItem'].firstChange && this.todoList) {
+      let newItemCurrentValue: Item = changes['newItem'].currentValue;
+      this.panelService.createItem(newItemCurrentValue.text, newItemCurrentValue.expired, this.todoList.id)
+        .subscribe(result => {
+          this.itemsPage.content.unshift(result.item);
+          this.itemsPage.totalElements += 1;
+          if (this.itemsPage.numberOfElements == this.itemsPage.size) {
+            this.itemsPage.content.pop();
+            this.itemsPage.totalPages = Math.ceil(this.itemsPage.totalElements / this.itemsPage.size);
+            if (this.itemsPage.last) {
+              this.itemsPage.last = false;
+            }
+          } else {
+            this.itemsPage.numberOfElements += 1;
+          }
+        }, () => this.openSnackBar("Hubo problemas al crear la tarea"));
+    }
+    if (changes['todoList'] && !changes['todoList'].firstChange && this.todoList && this.expanded) {
+      this.getItems(0, 5);
     }
   }
 
@@ -43,54 +59,48 @@ export class PanelComponent implements OnInit {
     this.updatePanel();
   }
 
-  itemsPage: ItemsPage = {
-    first: true,
-    last: true,
-    number: 0,
-    numberOfElements: 3,
-    size: 10,
-    totalPages: 1,
-    totalElements: 3,
-    content: [
-      {
-        id: 1,
-        text: "Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras que mira su diseño.",
-        state: false,
-        created: new Date(),
-        expired: null,
-        todoListId: 1,
+  constructor(private snackBar: MatSnackBar, public dialog: MatDialog, private panelService: PanelService) {
+  }
+
+  getItems(page: number, per_page: number) {
+    if (this.todoList) {
+      Promise.resolve().then(() => this.loading = true);
+      this.panelService.getItems(this.todoList.id, page, per_page, this.state).subscribe(
+        result => {
+          this.itemsPage = result.items;
+          this.loading = false;
+        },
+        () => this.openSnackBar("Hubo problemas al cargar las tareas")
+      );
+      this.updatePanels[this.state] = false;
+    }
+  }
+
+  changeStateItem(item: Item) {
+    item.state = !item.state;
+    this.panelService.updateItem(item).subscribe(
+      () => {
+        Object.keys(this.updatePanels).forEach(key => this.updatePanels[key] = true);
       },
-      {
-        id: 2,
-        text: "Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras que mira su diseño.",
-        state: false,
-        created: new Date(),
-        expired: null,
-        todoListId: 1,
-      },
-      {
-        id: 3,
-        text: "Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras que mira su diseño.",
-        state: false,
-        created: new Date(),
-        expired: null,
-        todoListId: 1,
+      () => {
+        this.openSnackBar("Hubo problemas al editar la tarea")
+        item.state = !item.state;
       }
-    ]
+    )
   }
 
-  constructor(private snackBar: MatSnackBar, public dialog: MatDialog) {
+  changeExpanded() {
+    this.expanded = !this.expanded;
+    this.updatePanel();
   }
 
-  ngOnInit(): void {
+  updatePanel() {
+    if (this.expanded && this.updatePanels[this.state]) {
+      this.getItems(this.itemsPage.number, this.itemsPage.size);
+    }
   }
 
-  /*updateItem(item: Item){
-    //actualizar item visualmente
-    //mandar consulta para actualizar item
-  }*/
-
-  updateItem(item: Item) {
+  updateItemTextAndExpired(item: Item) {
     let dialogRef = this.dialog.open(DialogComponent, {
       data: {
         isInput: true,
@@ -104,49 +114,37 @@ export class PanelComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result?.state) {
+        let oldText = item.text;
+        let oldExpired = item.expired;
         item.text = result.data.text;
         item.expired = result.data.date;
-      } else {
-        this.openSnackBar("No se edito");
+        this.panelService.updateItem(item).subscribe(() => {
+        }, () => {
+          this.openSnackBar("Hubo problemas al editar la tarea");
+          item.text = oldText;
+          item.expired = oldExpired;
+        })
       }
     });
   }
 
-  deleteItem(item: Item){
-    console.log('Eliminando item N°' + item.id);
-    if(!this.itemsPage.last){
-      console.log('Actualizando ' + this.state);
-    }else if(!this.itemsPage.first && this.itemsPage.numberOfElements == 1){
-      console.log('Actualizando pagina anterior ' + this.state);
-    }else{
-      this.itemsPage.content = this.itemsPage.content.filter(obj => obj !== item);
-      this.itemsPage.totalElements -= 1;
-      this.itemsPage.numberOfElements -= 1;
-    }
-  }
-
-  changeStateItem(item: Item) {
-    item.state = !item.state;
-    this.sendUpdateAllPanels();
-  }
-
-  changeExpanded() {
-    this.expanded = !this.expanded;
-    this.updatePanel();
-  }
-
-  updatePanel() {
-    if (this.expanded && this.updatePanels[this.state]) {
-      console.log("Actualizando " + this.state);
-      this.updatePanels[this.state] = false;
-    }
-  }
-
-  sendUpdateAllPanels() {
-    Object.keys(this.updatePanels).forEach(key => this.updatePanels[key] = true);
+  deleteItem(item: Item) {
+    this.panelService.deleteItem(item).subscribe(
+      () => {
+        if (!this.itemsPage.last) {
+          this.getItems(this.itemsPage.number, this.itemsPage.size);
+        } else if (!this.itemsPage.first && this.itemsPage.numberOfElements == 1) {
+          this.getItems(this.itemsPage.number - 1, this.itemsPage.size);
+        } else {
+          this.itemsPage.content = this.itemsPage.content.filter(obj => obj !== item);
+          this.itemsPage.totalElements -= 1;
+          this.itemsPage.numberOfElements -= 1;
+        }
+      },
+      () => this.openSnackBar("Hubo problemas al borrar la tarea"));
   }
 
   openSnackBar(message: string) {
-    this.snackBar.open(message, "Cerrar", {duration: 60000, panelClass: ['warning']});
+    this.snackBar.open(message, "Cerrar", {duration: 5000, panelClass: ['warning']});
   }
 }

@@ -3,18 +3,14 @@
     <mat-icon svgIcon="check-logo" id="icon-logo" class="mr-05"></mat-icon>
     <a [routerLink]="'/home'" style="text-decoration: inherit; color: inherit">TodoList</a>
   </div>
-  <div *ngIf="false; else loggedIn">
-    <span class="mat-body-1 mr-1">Iniciar Sesión</span>
-    <span class="mat-body-1">Registrarse</span>
-  </div>
-  <ng-template #loggedIn>
+  <div *ngIf="isLogged">
     <mat-menu #appMenu="matMenu">
       <button mat-menu-item>Perfil</button>
-      <button mat-menu-item [routerLink]="'/login'">Cerrar sesión</button>
+      <button mat-menu-item (click)="logout()">Cerrar sesión</button>
     </mat-menu>
 
     <button mat-button [matMenuTriggerFor]="appMenu">User
       <mat-icon class="ml-02">account_circle</mat-icon>
     </button>
-  </ng-template>
+  </div>
 </mat-toolbar>

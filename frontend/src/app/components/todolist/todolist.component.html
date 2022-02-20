@@ -1,6 +1,6 @@
 <mat-card>
   <mat-card-title class="card-title">
-    <span>{{folder.name|titlecase}}</span>
+    <span>{{folder?.name}}</span>
     <mat-menu #appMenu="matMenu">
       <button mat-menu-item (click)="updateFolder()">
         <mat-icon>edit</mat-icon>
@@ -15,7 +15,7 @@
       <mat-icon>menu</mat-icon>
     </button>
   </mat-card-title>
-  <mat-card-subtitle>Creada: {{folder.created|date:'dd/MM/yy'}}</mat-card-subtitle>
+  <mat-card-subtitle>Creado: {{folder?.created|date:'dd/MM/yy'}}</mat-card-subtitle>
 
   <mat-card class="mb-2" style="background-color: #fafafa; margin-bottom: 15px; border: 1px #eee solid">
     <mat-form-field appearance="legacy" [style.display]="'block'">
@@ -54,18 +54,21 @@
   <mat-accordion multi>
     <app-panel [title]="'Tareas sin completar'"
                [state]="'unchecked'"
+               [todoList]="this.folder"
                [expanded]="true"
                [newItem]="newItem"
                [updatePanels]="updatePanels"></app-panel>
 
     <app-panel [title]="'Tareas completadas'"
                [state]="'checked'"
+               [todoList]="this.folder"
                [expanded]="false"
                [newItem]="null"
                [updatePanels]="updatePanels"></app-panel>
 
     <app-panel [title]="'Tareas vencidas'"
                [state]="'expired'"
+               [todoList]="this.folder"
                [expanded]="false"
                [newItem]="null"
                [updatePanels]="updatePanels"></app-panel>

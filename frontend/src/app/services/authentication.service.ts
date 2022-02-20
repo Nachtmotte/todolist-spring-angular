@@ -54,13 +54,7 @@ export class AuthenticationService {
     formData.append('username', username);
     formData.append('password', password);
 
-    return this.http.post<any>(`${env.backendUrl}/login`, formData,
-      {
-        headers: {
-          //Quitar
-          'Skip': "true"
-        }
-      })
+    return this.http.post<any>(`${env.backendUrl}/login`, formData)
   }
 
   logout() {
@@ -72,11 +66,7 @@ export class AuthenticationService {
     const rawToken = sessionStorage.getItem('refreshToken');
     return this.http.get<any>(`${env.backendUrl}/token/refresh`,
       {
-        headers: {
-          'Authorization': `Bearer ${rawToken}`,
-          //Quitar
-          'Skip': "true"
-        }
+        headers: {'Authorization': `Bearer ${rawToken}`}
       })
   }
 }

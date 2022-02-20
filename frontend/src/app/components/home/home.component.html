@@ -5,14 +5,19 @@
                [opened]="(isHandset$ | async) === false">
     <mat-toolbar class="mt-1">Carpetas</mat-toolbar>
     <mat-nav-list class="pt-0 text-cut">
-      <mat-list-item *ngFor="let folder of folders" (click)="changeFolder(folder)">
-        <mat-icon class="icon-margin">folder_open</mat-icon>
-        {{folder.name|titlecase}}
+      <mat-list-item *ngIf="loading" style="display: flex; justify-content: center">
+        <mat-spinner diameter="20"></mat-spinner>
       </mat-list-item>
-      <mat-list-item style="color: #777" (click)="createFolder()">
-        <mat-icon class="icon-margin">add_circle_outline</mat-icon>
-        Nueva carpeta
-      </mat-list-item>
+      <ng-container *ngIf="!loading">
+        <mat-list-item *ngFor="let folder of folders" (click)="changeFolder(folder)">
+          <mat-icon class="icon-margin">folder_open</mat-icon>
+          {{folder.name}}
+        </mat-list-item>
+        <mat-list-item style="color: #777" (click)="createFolder()">
+          <mat-icon class="icon-margin">add_circle_outline</mat-icon>
+          Nueva carpeta
+        </mat-list-item>
+      </ng-container>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
@@ -23,7 +28,7 @@
       *ngIf="isHandset$ | async">
       <mat-icon>menu</mat-icon>
     </button>
-    <app-todolist [folder]="folder" (updateFolderEvent)="updateFolder()"
+    <app-todolist *ngIf="folder != null" [folder]="folder" (updateFolderEvent)="updateFolder()"
                   (deleteFolderEvent)="deleteFolder()"></app-todolist>
   </mat-sidenav-content>
 </mat-sidenav-container>

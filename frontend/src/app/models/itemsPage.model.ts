@@ -23,3 +23,11 @@ export class ItemsPage{
     this.content = content;
   }
 }
+
+export class PageOfItems{
+  items: ItemsPage;
+
+  constructor(items: ItemsPage) {
+    this.items = items;
+  }
+}

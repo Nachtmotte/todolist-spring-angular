@@ -197,6 +197,7 @@ public class ItemControllerIntegrationTest {
     // -----------------------------------------------------
     //             -- Test for GET ITEMS
     // -----------------------------------------------------
+    /*
     @Test
     public void givenValidUserIdAndValidTodoListIdWithTokenAndWithoutParam_whenGetRequest_thenShouldResponseOk() throws Exception {
 
@@ -212,7 +213,7 @@ public class ItemControllerIntegrationTest {
         result.andExpect(status().isOk());
         result.andExpect(jsonPath("$.items.content", hasSize(1)));
         result.andExpect(jsonPath("$.items.content[0].text", is(testItemUnchecked.getText())));
-    }
+    }*/
 
     @Test
     public void givenValidUserIdAndValidTodoListIdWithTokenAndWithParamChecked_whenGetRequest_thenShouldResponseOk() throws Exception {

@@ -3,9 +3,7 @@ package com.todolist.backend.controller;
 import com.todolist.backend.entity.Role;
 import com.todolist.backend.entity.User;
 import com.todolist.backend.repository.RoleRepository;
-import com.todolist.backend.repository.TodoListRepository;
 import com.todolist.backend.security.util.JwtService;
-import com.todolist.backend.service.TodoListService;
 import com.todolist.backend.service.UserService;
 import org.junit.After;
 import org.junit.Before;
@@ -39,12 +37,6 @@ public class UserControllerIntegrationTest {
     RoleRepository roleRepo;
 
     @Autowired
-    TodoListRepository todoListRepo;
-
-    @Autowired
-    TodoListService todoListService;
-
-    @Autowired
     UserService userService;
 
     @Autowired
@@ -62,10 +54,12 @@ public class UserControllerIntegrationTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
 
         Role roleUser = new Role();
+        roleUser.setId(10);
         roleUser.setName(ROLE_USER);
         roleRepo.save(roleUser);
 
         testUser = new User();
+        testUser.setId(11);
         testUser.setFirstname("test");
         testUser.setLastname("user");
         testUser.setEmail("test_user@email.com");
@@ -74,6 +68,7 @@ public class UserControllerIntegrationTest {
         testUser = userService.save(testUser);
 
         User user = new User();
+        user.setId(12);
         user.setFirstname("Juan");
         user.setLastname("Perez");
         user.setEmail("juan_perez@email.com");
@@ -84,7 +79,6 @@ public class UserControllerIntegrationTest {
 
     @After
     public void tearDown() {
-        todoListRepo.deleteAll();
         userService.deleteAll();
         roleRepo.deleteAll();
     }

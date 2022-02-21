@@ -32,8 +32,18 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.homeService.getTodoLists().subscribe(result => {
       this.folders = result.lists;
-      this.folder = this.folders[0]
-      this.loading = false;
+      if (this.folders.length == 0) {
+        this.homeService.createTodoList("Tareas").subscribe(
+          result => {
+            this.folders.push(result.list);
+            this.folder = this.folders[0]
+            this.loading = false;
+          }
+        )
+      } else {
+        this.folder = this.folders[0]
+        this.loading = false;
+      }
     });
   }
 

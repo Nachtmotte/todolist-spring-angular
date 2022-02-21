@@ -1,11 +1,12 @@
 <mat-toolbar color="primary" class="navbar">
   <div id="logo">
-    <mat-icon svgIcon="check-logo" id="icon-logo" class="mr-05"></mat-icon>
+    <mat-icon id="icon-logo" class="mr-02">check_box</mat-icon>
     <a [routerLink]="'/home'" style="text-decoration: inherit; color: inherit">TodoList</a>
   </div>
   <div *ngIf="isLogged">
     <mat-menu #appMenu="matMenu">
       <button type="button" mat-menu-item [routerLink]="'/profile'">Perfil</button>
+      <button *ngIf="isAdmin" type="button" mat-menu-item [routerLink]="'/users'">Usuarios</button>
       <button type="button" mat-menu-item (click)="logout()">Cerrar sesión</button>
     </mat-menu>
 

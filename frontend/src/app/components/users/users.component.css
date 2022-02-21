@@ -1,0 +1,34 @@
+@media (max-width: 360px) {
+  .table {
+    width: 100%;
+  }
+}
+
+.table {
+  margin: 50px auto;
+}
+
+.headers {
+  text-align: center;
+  color: white
+}
+
+::ng-deep .mat-paginator .mat-select-value-text {
+  color: white;
+}
+
+::ng-deep .mat-paginator .mat-select-arrow{
+  color: white;
+}
+
+::ng-deep .mat-paginator .mat-form-field-underline{
+  background-color: white;
+}
+
+::ng-deep .mat-paginator .mat-icon-button.mat-button-disabled{
+  color: #777777;
+}
+
+::ng-deep .mat-paginator .mat-icon-button{
+  color: white;
+}

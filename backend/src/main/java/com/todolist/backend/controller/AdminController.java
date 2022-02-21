@@ -9,7 +9,6 @@ import com.todolist.backend.service.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,9 +28,6 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 @RequiredArgsConstructor
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminController {
-
-    @Value("${pagination.users.number}")
-    int users_per_page;
 
     private final RoleService roleService;
 
@@ -92,10 +88,12 @@ public class AdminController {
     @GetMapping("/users")
     public ResponseEntity<Map<String, Object>> getUsers(
             @RequestParam(value = "page", required = false) Integer pageNumber,
+            @RequestParam(value = "per_page", required = false) Integer users_per_page,
             @RequestParam(value = "orderby", required = false) String order,
             @RequestParam(value = "direction", required = false) String direction) {
 
         pageNumber = pageNumber == null ? 0 : pageNumber;
+        users_per_page = users_per_page == null ? 10 : users_per_page;
         order = order == null ? "id" : order;
         direction = direction == null ? "asc" : direction;
 

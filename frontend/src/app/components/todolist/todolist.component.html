@@ -2,11 +2,11 @@
   <mat-card-title class="card-title">
     <span>{{folder?.name}}</span>
     <mat-menu #appMenu="matMenu">
-      <button mat-menu-item (click)="updateFolder()">
+      <button mat-menu-item (click)="sendFolderUpdateEvent()">
         <mat-icon>edit</mat-icon>
         Renombrar
       </button>
-      <button mat-menu-item (click)="deleteFolder()">
+      <button mat-menu-item (click)="sendFolderDeleteEvent()">
         <mat-icon>delete</mat-icon>
         Borrar carpeta
       </button>

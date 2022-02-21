@@ -54,6 +54,7 @@
   <mat-action-row class="ptb-0" style="background-color: #3F51B5">
     <mat-paginator style="background-color: #3F51B5; color: white"
                    [length]="itemsPage.totalElements"
+                   [pageIndex]="itemsPage.number"
                    [pageSize]="itemsPage.size"
                    [pageSizeOptions]="[5, 10, 20]"
                    (page)="getItems($event.pageIndex, $event.pageSize)">

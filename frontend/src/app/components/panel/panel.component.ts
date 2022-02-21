@@ -50,8 +50,9 @@ export class PanelComponent {
           }
         }, () => this.openSnackBar("Hubo problemas al crear la tarea"));
     }
-    if (changes['todoList'] && !changes['todoList'].firstChange && this.todoList && this.expanded) {
-      this.getItems(0, 5);
+    if (changes['todoList'] && !changes['todoList'].firstChange && this.todoList) {
+      this.updatePanels[this.state] = true;
+      this.updatePanel();
     }
   }
 
@@ -64,6 +65,7 @@ export class PanelComponent {
 
   getItems(page: number, per_page: number) {
     if (this.todoList) {
+      //Promise prevent error NG0100
       Promise.resolve().then(() => this.loading = true);
       this.panelService.getItems(this.todoList.id, page, per_page, this.state).subscribe(
         result => {
@@ -76,19 +78,6 @@ export class PanelComponent {
     }
   }
 
-  changeStateItem(item: Item) {
-    item.state = !item.state;
-    this.panelService.updateItem(item).subscribe(
-      () => {
-        Object.keys(this.updatePanels).forEach(key => this.updatePanels[key] = true);
-      },
-      () => {
-        this.openSnackBar("Hubo problemas al editar la tarea")
-        item.state = !item.state;
-      }
-    )
-  }
-
   changeExpanded() {
     this.expanded = !this.expanded;
     this.updatePanel();
@@ -98,6 +87,33 @@ export class PanelComponent {
     if (this.expanded && this.updatePanels[this.state]) {
       this.getItems(this.itemsPage.number, this.itemsPage.size);
     }
+  }
+
+  changeStateItem(item: Item) {
+    item.state = !item.state;
+    this.panelService.updateItem(item).subscribe(
+      () => {
+        if (!this.itemsPage.last) {
+          Object.keys(this.updatePanels).forEach(key => this.updatePanels[key] = true);
+        } else if (!this.itemsPage.first && this.itemsPage.numberOfElements == 1) {
+          this.itemsPage.number -= 1;
+          Object.keys(this.updatePanels).forEach(key => this.updatePanels[key] = true);
+        } else {
+          Object.keys(this.updatePanels).forEach(key => {
+            if (key != this.state) {
+              this.updatePanels[key] = true
+            }
+          });
+          this.itemsPage.content = this.itemsPage.content.filter(obj => obj !== item);
+          this.itemsPage.totalElements -= 1;
+          this.itemsPage.numberOfElements -= 1;
+        }
+      },
+      () => {
+        this.openSnackBar("Hubo problemas al editar la tarea")
+        item.state = !item.state;
+      }
+    )
   }
 
   updateItemTextAndExpired(item: Item) {

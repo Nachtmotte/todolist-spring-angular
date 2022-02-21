@@ -5,11 +5,12 @@
   </div>
   <div *ngIf="isLogged">
     <mat-menu #appMenu="matMenu">
-      <button mat-menu-item>Perfil</button>
-      <button mat-menu-item (click)="logout()">Cerrar sesión</button>
+      <button type="button" mat-menu-item [routerLink]="'/profile'">Perfil</button>
+      <button type="button" mat-menu-item (click)="logout()">Cerrar sesión</button>
     </mat-menu>
 
-    <button mat-button [matMenuTriggerFor]="appMenu">User
+    <button type="button" mat-button [matMenuTriggerFor]="appMenu">
+      {{username}}
       <mat-icon class="ml-02">account_circle</mat-icon>
     </button>
   </div>

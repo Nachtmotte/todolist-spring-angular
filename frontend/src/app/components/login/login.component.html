@@ -37,7 +37,7 @@
       <button mat-raised-button color="primary" type="submit" class="login-submit">Acceder</button>
       <br/><br/>
       <span class="mat-h4">¿No tienes una cuenta?</span>
-      <button mat-button color="primary" class="mat-h4 register-button" [routerLink]="['/register']" [queryParams]="{returnUrl: returnUrl}">Registrate</button>
+      <button type="button" mat-button color="primary" class="mat-h4 register-button" [routerLink]="'/register'" [queryParams]="{returnUrl: returnUrl}">Registrate</button>
       <mat-progress-bar  *ngIf="loading" mode="indeterminate" class="progress-bar"></mat-progress-bar>
     </mat-card-actions>
   </mat-card>

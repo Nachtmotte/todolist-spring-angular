@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {TodoList} from "../../models/todoList.model";
 import {Item} from "../../models/item.model";
 
@@ -7,7 +7,7 @@ import {Item} from "../../models/item.model";
   templateUrl: './todolist.component.html',
   styleUrls: ['./todolist.component.css']
 })
-export class TodolistComponent implements OnInit {
+export class TodolistComponent {
 
   @Input() folder: TodoList | null = null;
   @Output() updateFolderEvent: EventEmitter<void>;
@@ -22,9 +22,6 @@ export class TodolistComponent implements OnInit {
   constructor() {
     this.updateFolderEvent = new EventEmitter<void>();
     this.deleteFolderEvent = new EventEmitter<void>();
-  }
-
-  ngOnInit(): void {
   }
 
   saveDate(event: Date) {
@@ -44,13 +41,5 @@ export class TodolistComponent implements OnInit {
 
   sendFolderDeleteEvent(): void {
     this.deleteFolderEvent.emit();
-  }
-
-  updateFolder() {
-    this.sendFolderUpdateEvent();
-  }
-
-  deleteFolder() {
-    this.sendFolderDeleteEvent();
   }
 }

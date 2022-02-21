@@ -19,6 +19,10 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
+mat-sidenav {
+  visibility: unset !important;
+}
+
 ::-webkit-scrollbar {
   width: 2px;
   height: 2px;

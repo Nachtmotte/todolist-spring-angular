@@ -19,6 +19,8 @@ import {MAT_DATE_LOCALE} from "@angular/material/core";
 import {getSpanishPaginatorIntl} from "./components/material/spanish-paginator-intl";
 import {LoginComponent} from './components/login/login.component';
 import {JwtInterceptor} from "./interceptors/jwt.interceptor";
+import { ProfileComponent } from './components/profile/profile.component';
+import { RegisterComponent } from './components/register/register.component';
 
 
 @NgModule({
@@ -29,7 +31,9 @@ import {JwtInterceptor} from "./interceptors/jwt.interceptor";
     TodolistComponent,
     PanelComponent,
     DialogComponent,
-    LoginComponent
+    LoginComponent,
+    ProfileComponent,
+    RegisterComponent
   ],
   entryComponents: [DialogComponent],
     imports: [

@@ -22,6 +22,7 @@ import {ProfileComponent} from './components/profile/profile.component';
 import {RegisterComponent} from './components/register/register.component';
 import { UsersComponent } from './components/users/users.component';
 import {MatTableModule} from "@angular/material/table";
+import { Page404Component } from './components/page404/page404.component';
 
 
 @NgModule({
@@ -35,7 +36,8 @@ import {MatTableModule} from "@angular/material/table";
     LoginComponent,
     ProfileComponent,
     RegisterComponent,
-    UsersComponent
+    UsersComponent,
+    Page404Component
   ],
   entryComponents: [DialogComponent],
   imports: [

@@ -1,0 +1,49 @@
+<button mat-raised-button color="primary" style="margin: 1rem" [routerLink]="'/home'">
+  <mat-icon>keyboard_backspace</mat-icon>
+  volver
+</button>
+<div class="mat-elevation-z8" style="max-width: 70rem; margin: 20px auto">
+  <table mat-table [dataSource]="dataSource" style="width: 100%; text-align: center">
+
+    <ng-container matColumnDef="firstname">
+      <th mat-header-cell *matHeaderCellDef class="headers"> Nombre</th>
+      <td mat-cell *matCellDef="let element"> {{element.firstname}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="lastname">
+      <th mat-header-cell *matHeaderCellDef class="headers"> Apellido</th>
+      <td mat-cell *matCellDef="let element"> {{element.lastname}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef class="headers"> Email</th>
+      <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="username">
+      <th mat-header-cell *matHeaderCellDef class="headers"> Usuario</th>
+      <td mat-cell *matCellDef="let element"> {{element.username}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="created">
+      <th mat-header-cell *matHeaderCellDef class="headers"> Creado</th>
+      <td mat-cell *matCellDef="let element"> {{element.created}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="roles">
+      <th mat-header-cell *matHeaderCellDef class="headers"> Roles</th>
+      <td mat-cell *matCellDef="let element"><div *ngFor="let role of element.roles">{{role.name}}</div></td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns" style="background-color: #3F51B5"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <mat-paginator style="background-color: #3F51B5; color: white"
+                 [length]="usersPage.totalElements"
+                 [pageIndex]="usersPage.number"
+                 [pageSize]="usersPage.size"
+                 [pageSizeOptions]="[5, 10, 20]"
+                 (page)="getUsers($event.pageIndex, $event.pageSize)">
+  </mat-paginator>
+</div>

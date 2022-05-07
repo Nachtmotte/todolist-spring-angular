@@ -1,13 +1,18 @@
 package com.todolist.backend;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import com.todolist.backend.controller.*;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
-@SpringBootTest
-class BackendApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+		UserControllerIntegrationTest.class,
+		AdminControllerIntegrationTest.class,
+		TokenControllerIntegrationTest.class,
+		ProfilePictureControllerIntegrationTest.class,
+		TodoListControllerIntegrationTest.class,
+		ItemControllerIntegrationTest.class
+})
+public class BackendApplicationTests {
 
 }

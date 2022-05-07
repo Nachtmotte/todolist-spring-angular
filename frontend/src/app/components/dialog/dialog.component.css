@@ -1,0 +1,17 @@
+
+.card-width{
+  width: 300px;
+}
+
+@media (max-width: 460px) {
+  .card-width{
+    width: 240px;
+  }
+}
+
+@media (max-width: 370px) {
+  .card-width{
+    width: 170px;
+  }
+}
+

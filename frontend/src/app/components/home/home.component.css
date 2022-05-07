@@ -1,0 +1,44 @@
+.sidenav-container {
+  height: 100%;
+}
+
+.sidenav {
+  width: 300px;
+}
+
+@media (max-width: 460px) {
+  .sidenav {
+    width: 200px;
+  }
+}
+
+.sidenav .mat-toolbar {
+  background: inherit;
+}
+
+.mat-toolbar.mat-primary {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.icon-margin{
+  margin-right: 0.2rem;
+}
+
+.pt-0{
+  padding-top: 0;
+}
+
+.text-cut{
+  overflow:hidden;
+  white-space:nowrap;
+}
+
+::ng-deep .warning{
+  background: #F44336;
+}
+
+::ng-deep .warning .mat-button-wrapper{
+  color: #FFF;
+}

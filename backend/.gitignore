@@ -3,6 +3,10 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+.gcloudignore
+.mvn
+app.yaml
+cloudbuild.yaml
 
 ### STS ###
 .apt_generated

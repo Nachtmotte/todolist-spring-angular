@@ -1,0 +1,125 @@
+<form [formGroup]="registerForm" novalidate (ngSubmit)="onSubmit()" class="row">
+  <mat-card class="shipping-card">
+    <mat-card-header class="card-header">
+      <mat-card-title>
+        <span class="mat-h1">Registrate en TodoList</span>
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="row">
+        <div class="col register-input-sm">
+          <mat-form-field class="register-input">
+            <input type="text" matInput placeholder="Nombre" formControlName="firstName" name="firstName">
+            <mat-error *ngIf="registerForm.controls['firstName'].hasError('required')">
+              El Nombre es <strong>Requerido</strong>
+            </mat-error>
+            <mat-error *ngIf="registerForm.controls['firstName'].hasError('pattern')">
+              El Nombre es <strong>Invalido</strong>
+            </mat-error>
+            <mat-error *ngIf="registerForm.controls['firstName'].hasError('maxlength')">
+              El Nombre debe poseer <strong>Menos</strong> de 45 caracteres
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col register-input-sm">
+          <mat-form-field class="register-input">
+            <input type="text" matInput placeholder="Apellido" formControlName="lastName" name="lastName">
+            <mat-error *ngIf="registerForm.controls['lastName'].hasError('required')">
+              El Apellido es <strong>Requerido</strong>
+            </mat-error>
+            <mat-error *ngIf="registerForm.controls['lastName'].hasError('pattern')">
+              El Apellido es <strong>Invalido</strong>
+            </mat-error>
+            <mat-error *ngIf="registerForm.controls['lastName'].hasError('maxlength')">
+              El Apellido debe poseer <strong>Menos</strong> de 45 caracteres
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="register-input">
+            <input type="text" matInput placeholder="Nombre de usuario" formControlName="username" name="username">
+            <mat-error *ngIf="registerForm.controls['username'].hasError('required')">
+              El Nombre de usuario es <strong>Requerido</strong>
+            </mat-error>
+            <mat-error *ngIf="registerForm.controls['username'].hasError('pattern')">
+              El Nombre de usuario es <strong>Invalido</strong>
+            </mat-error>
+            <mat-error *ngIf="registerForm.controls['username'].hasError('minlength')">
+              El Nombre de usuario debe poseer <strong>Al menos</strong> de 8 caracteres
+            </mat-error>
+            <mat-error *ngIf="registerForm.controls['username'].hasError('maxlength')">
+              El Nombre de usuario debe poseer <strong>Como maximo</strong> de 20 caracteres
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="register-input">
+            <input type="text" matInput placeholder="Email" formControlName="email" name="email">
+            <mat-error *ngIf="registerForm.controls['email'].hasError('required')">
+              El Correo es <strong>Requerido</strong>
+            </mat-error>
+            <mat-error *ngIf="registerForm.controls['email'].hasError('email')">
+              El Correo es <strong>Invalido</strong>
+            </mat-error>
+            <mat-error *ngIf="registerForm.controls['email'].hasError('maxlength')">
+              El Correo debe poseer <strong>Menos</strong> de 45 caracteres
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col register-input-sm">
+          <mat-form-field class="register-input">
+            <input type="password" matInput placeholder="Contraseña" formControlName="password" name="password">
+            <mat-error *ngIf="registerForm.controls['password'].hasError('required')">
+              La Contraseña es <strong>Requerida</strong>
+            </mat-error>
+            <mat-error *ngIf="registerForm.controls['password'].hasError('pattern')">
+              La Contraseña es <strong>Invalida</strong>
+            </mat-error>
+            <mat-error *ngIf="registerForm.controls['password'].hasError('maxlength')">
+              La Contraseña debe poseer <strong>Menos</strong> de 45 caracteres
+            </mat-error>
+            <mat-error *ngIf="registerForm.controls['password'].hasError('minlength')">
+              La Contraseña debe poseer <strong>Mas</strong> de 8 caracteres
+            </mat-error>
+            <mat-error *ngIf="registerForm.controls['password'].hasError('lowercase')">
+              La Contraseña debe poseer al menos una letra <strong>Minuscula</strong>
+            </mat-error>
+            <mat-error *ngIf="registerForm.controls['password'].hasError('uppercase')">
+              La Contraseña debe poseer al menos una letra <strong>Mayuscula</strong>
+            </mat-error>
+            <mat-error *ngIf="registerForm.controls['password'].hasError('number')">
+              La Contraseña debe poseer al menos un <strong>Digito</strong>
+            </mat-error>
+            <mat-error *ngIf="registerForm.controls['password'].hasError('space')">
+              La Contraseña no debe poseer <strong>Espacios</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col register-input-sm">
+          <mat-form-field class="register-input">
+            <input type="password" matInput placeholder="Repita la Contraseña" formControlName="repeatedPassword">
+            <mat-error *ngIf="registerForm.controls['repeatedPassword'].hasError('required')">
+              Ingrese <strong>Nuevamente</strong> la Contraseña
+            </mat-error>
+            <mat-error *ngIf="registerForm.controls['repeatedPassword'].hasError('notequivalent')">
+              Las Contraseñas no <strong>Coinciden</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions class="action-buttons">
+      <button type="submit" mat-raised-button color="primary" class="register-submit">Confirmar</button>
+      <br/><br/>
+      <span class="mat-h4">¿Ya tienes una cuenta?</span>
+      <button type="button" mat-button color="primary" class="mat-h4" style="padding: 0" [routerLink]="'/login'">Inicia sesión</button>
+      <mat-progress-bar mode="indeterminate" *ngIf="loading" class="progress-bar"></mat-progress-bar>
+    </mat-card-actions>
+  </mat-card>
+</form>

@@ -1,0 +1,64 @@
+.ptb-0 {
+  padding-top: 0;
+  padding-bottom: 0
+}
+
+.space-center {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.expired-text{
+  font-size: 12px !important;
+  color: #777777;
+}
+
+::ng-deep .mat-list-base .mat-list-option{
+  display: flex;
+  align-items: center;
+  min-height: 38px;
+  height: 100%;
+}
+
+::ng-deep .mat-list-text{
+  justify-content: center;
+  min-height: 38px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+::ng-deep .mat-expansion-panel:not(.mat-expanded){
+  margin-bottom: 15px;
+}
+
+::ng-deep .mat-paginator .mat-select-value-text {
+  color: white;
+}
+
+::ng-deep .mat-paginator .mat-select-arrow{
+  color: white;
+}
+
+::ng-deep .mat-paginator .mat-form-field-underline{
+  background-color: white;
+}
+
+::ng-deep .mat-paginator .mat-icon-button.mat-button-disabled{
+  color: #777777;
+}
+
+::ng-deep .mat-paginator .mat-icon-button{
+  color: white;
+}
+
+::ng-deep .mat-expansion-panel .mat-expansion-indicator:after {
+  color: white;
+}
+
+@media (max-width: 700px) {
+  ::ng-deep .mat-expansion-panel-body {
+    padding: 0 !important;
+  }
+}
+

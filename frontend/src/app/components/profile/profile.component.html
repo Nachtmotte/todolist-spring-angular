@@ -1,0 +1,36 @@
+<button mat-raised-button color="primary" style="margin: 1rem" [routerLink]="'/home'">
+  <mat-icon>keyboard_backspace</mat-icon>
+  volver
+</button>
+<mat-card class="profile-card">
+  <mat-card-title style="display: flex; align-items: center">
+    <mat-icon color="primary">account_circle</mat-icon>
+    <span style="margin-left: 0.4rem">Perfil</span>
+  </mat-card-title>
+  <mat-card-content style="margin-top: 20px">
+    <div style="text-align: center">
+      <span class="mat-h3"><strong>Nombre: </strong></span>
+      <span class="mat-h3">{{user?.firstname}}</span>
+    </div>
+    <div style="text-align: center">
+      <span class="mat-h3"><strong>Apellido: </strong></span>
+      <span class="mat-h3">{{user?.lastname}}</span>
+    </div>
+    <div style="text-align: center">
+      <span class="mat-h3"><strong>Usuario: </strong></span>
+      <span class="mat-h3">{{user?.username}}</span>
+    </div>
+    <div style="text-align: center">
+      <span class="mat-h3"><strong>Email: </strong></span>
+      <span class="mat-h3">{{user?.email}}</span>
+    </div>
+    <div style="text-align: center">
+      <span class="mat-h3"><strong>Creada: </strong></span>
+      <span class="mat-h3">{{user?.created | date:'d/M/yy, h:mm a'}}</span>
+    </div>
+  </mat-card-content>
+  <mat-card-actions align="end">
+    <button mat-raised-button color="primary" [disabled]="true">Editar Datos</button>
+  </mat-card-actions>
+</mat-card>
+

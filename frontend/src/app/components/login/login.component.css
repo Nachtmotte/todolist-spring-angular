@@ -1,0 +1,54 @@
+.shipping-card {
+  min-width: 120px;
+  margin: 100px auto;
+}
+
+.card-header {
+  display: block;
+  text-align: center;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.col {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.col:last-child {
+  margin-right: 0;
+}
+
+.login-input {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.action-buttons {
+  text-align: center;
+  padding: 0;
+}
+
+.login-submit {
+  padding: 0 30px;
+}
+
+.register-button {
+  padding: 0;
+}
+
+.progress-bar {
+  margin: 5px 0 0 0 ;
+  transform: translateY(8px) scaleX(1.05);
+}
+
+::ng-deep .warning {
+  background: #F44336;
+}
+
+::ng-deep .warning .mat-button-wrapper{
+  color: #FFF;
+}
